@@ -1,0 +1,77 @@
+datasource db {
+  provider = "mysql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+
+model User {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  password     String
+  role         Role     @default(TENANT)
+  name         String?
+  uniqueNumber String?  @unique
+  schoolName   String?
+  hostelName   String?
+  roomNumber   String?
+  location     String?
+  isVerified   Boolean  @default(false)
+  phone        String?
+  businessName String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  hostels      Hostel[] 
+  bookings     Booking[]
+
+  @@map("user")
+}
+
+model Hostel {
+  id           Int         @id @default(autoincrement())
+  name         String
+  description  String?
+  location     String
+  price        Float
+  images       String?
+  createdAt    DateTime    @default(now())
+  owner        User        @relation(fields: [ownerId], references: [id])
+  ownerId      Int
+  university   University? @relation(fields: [universityId], references: [id])
+  universityId Int?
+  bookings     Booking[]
+
+  @@map("hostel")
+}
+
+model University {
+  id       Int      @id @default(autoincrement())
+  name     String   @unique
+  location String?
+  hostels  Hostel[]
+
+  @@map("university")
+}
+
+model Booking {
+  id             Int      @id @default(autoincrement())
+  student        User     @relation(fields: [studentId], references: [id])
+  studentId      Int
+  hostel         Hostel   @relation(fields: [hostelId], references: [id])
+  hostelId       Int
+  amount         Float
+  paymentPhone   String?
+  telecom        String?
+  verificationId String?  @unique
+  status         String   @default("APPLIED") // APPLIED, PAID, VERIFIED, CANCELLED
+  createdAt      DateTime @default(now())
+
+  @@map("booking")
+}
+
+enum Role {
+  OWNER
+  TENANT
+}

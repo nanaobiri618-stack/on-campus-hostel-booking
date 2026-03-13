@@ -1,0 +1,55 @@
+// lib/data-source.ts
+import type { Hostel } from "../app/search/types";
+
+export const mockHostels: Hostel[] = [
+  {
+    id: "1",
+    slug: "sunrise-hostel-knust",
+    name: "Sunrise Hostel",
+    campus: "KNUST",
+    city: "Kumasi",
+    price: 2500,
+    gender: "female",
+    verified: true,
+  },
+  {
+    id: "2",
+    slug: "legon-view-ug",
+    name: "Legon View",
+    campus: "University of Ghana",
+    city: "Accra",
+    price: 3200,
+    gender: "mixed",
+    verified: true,
+  },
+  {
+    id: "3",
+    slug: "tech-ridge-uenr",
+    name: "Tech Ridge",
+    campus: "UENR",
+    city: "Sunyani",
+    price: 1800,
+    gender: "male",
+    verified: false,
+  },
+  {
+    id: "4",
+    slug: "akwaaba-house-upsa",
+    name: "Akwaaba House",
+    campus: "UPSA",
+    city: "Accra",
+    price: 2100,
+    gender: "mixed",
+    verified: true,
+  },
+  {
+    id: "5",
+    slug: "green-gardens-ktu",
+    name: "Green Gardens",
+    campus: "KTU",
+    city: "Koforidua",
+    price: 1600,
+    gender: "female",
+    verified: false,
+  },
+];

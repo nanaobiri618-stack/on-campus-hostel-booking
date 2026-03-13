@@ -1,0 +1,130 @@
+@import "tailwindcss";
+
+/* -------------------------------------------------------------------------- */
+/* BASE LAYER: ROOT COLORS, TYPOGRAPHY, GLOBAL FIXES                          */
+/* -------------------------------------------------------------------------- */
+@layer base {
+  :root {
+    --background: #f8fafc;
+    --foreground: #0f172a;
+    --primary: #2563eb;
+    --primary-hover: #1d4ed8;
+    --secondary: #0f172a;
+    --card-bg: #ffffff;
+    --radius: 12px;
+    --ring: rgba(37, 99, 235, 0.2);
+  }
+
+  * {
+    @apply border-slate-200;
+  }
+
+  html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    scroll-behavior: smooth;
+  }
+
+  /* Custom Professional Scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-slate-100;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-slate-300 rounded-full hover:bg-slate-400 transition-colors;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* COMPONENTS LAYER: BUTTONS, FORMS, CARDS                                    */
+/* -------------------------------------------------------------------------- */
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-full px-6 py-2.5
+      text-sm font-bold text-white bg-blue-600 shadow-lg shadow-blue-200/50
+      transition-all duration-200 hover:bg-blue-700 hover:shadow-blue-300/50 
+      active:scale-95 disabled:opacity-50 disabled:pointer-events-none;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center rounded-full px-6 py-2.5
+      text-sm font-medium text-white bg-slate-900 shadow-sm
+      transition-all duration-200 hover:bg-slate-800 active:scale-95;
+  }
+
+  input, select, textarea {
+    @apply w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm
+      outline-none transition-all duration-200 placeholder:text-slate-400
+      focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10;
+  }
+
+  .hostel-card {
+    @apply bg-white border border-slate-100 shadow-sm rounded-2xl overflow-hidden
+      transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-slate-200/50;
+  }
+
+  .hero-overlay {
+    background: linear-gradient(
+      to top,
+      rgba(15, 23, 42, 0.98) 0%,
+      rgba(15, 23, 42, 0.6) 50%,
+      rgba(15, 23, 42, 0.2) 100%
+    );
+    @apply absolute inset-0 z-0 pointer-events-none;
+  }
+
+  .auth-card {
+    @apply bg-white shadow-2xl shadow-slate-200/60 border border-slate-100/80
+      rounded-3xl p-8 max-w-md w-full mx-auto backdrop-blur-sm;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* UTILITIES LAYER: ANIMATIONS AND EFFECTS                                    */
+/* -------------------------------------------------------------------------- */
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .glass-header {
+    @apply sticky top-0 z-50;
+    backdrop-filter: blur(12px);
+    background-color: rgba(255, 255, 255, 0.75);
+    border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+  }
+
+  .hero-img-filter {
+    filter: brightness(0.7) contrast(1.1);
+    @apply absolute inset-0 w-full h-full object-cover;
+  }
+}
