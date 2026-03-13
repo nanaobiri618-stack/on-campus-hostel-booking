@@ -33,7 +33,7 @@ export async function GET(request: Request) {
       const newToken = signJwt({ userId: user.id, role: user.role, isVerified: user.isVerified });
       response.cookies.set('auth_token', newToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
+        secure: false, // Allow both HTTP and HTTPS for deployment flexibility
         sameSite: 'lax',
         maxAge: 60 * 60 * 24, // 1 day
         path: '/',

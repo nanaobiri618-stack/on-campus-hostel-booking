@@ -13,16 +13,19 @@ export type University = {
   location?: string;
 };
 
+// app/search/types.ts
+
 export type Hostel = {
   id: number;
+  slug: string;       // Added this!
   name: string;
-  location: string;
+  location?: string;  // Made this optional with '?'
   price: number;
   images?: string | string[];
   description?: string;
   verified?: boolean;
   gender?: "female" | "male" | "mixed";
   university?: University;
-  campus?: string; // legacy support
-  city?: string; // legacy support
+  campus?: string; 
+  city?: string;   
 };

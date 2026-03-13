@@ -1,17 +1,12 @@
 import { PrismaClient } from '@prisma/client';
 import { PrismaMariaDb } from '@prisma/adapter-mariadb';
-import * as mariadb from 'mariadb';
 
 const prismaClientSingleton = () => {
-  const adapter = new PrismaMariaDb({
-    host: 'localhost',
-    user: 'root',
-    password: 'Kwesiobiri@8',
-    database: 'oncampus_db',
-    port: 3306,
-    connectionLimit: 10,
-    insertIdAsNumber: true,
-  });
+  if (!process.env.DATABASE_URL) {
+    throw new Error('DATABASE_URL environment variable is not set');
+  }
+
+  const adapter = new PrismaMariaDb(process.env.DATABASE_URL);
 
   return new PrismaClient({
     adapter,
@@ -20,6 +15,7 @@ const prismaClientSingleton = () => {
 };
 
 declare global {
+  // eslint-disable-next-line no-var
   var prisma: undefined | ReturnType<typeof prismaClientSingleton>;
 }
 

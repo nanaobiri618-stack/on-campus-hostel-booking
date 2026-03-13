@@ -32,10 +32,10 @@ export async function POST(request: Request) {
 
     const response = NextResponse.json({ message: 'Login successful', user: safeUser }, { status: 200 });
     
-    // Set HTTP-only cookie
+    // Set HTTP-only cookie - secure false to allow both HTTP and HTTPS
     response.cookies.set('auth_token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: false, // Allow both HTTP and HTTPS for deployment flexibility
       sameSite: 'lax',
       maxAge: 60 * 60 * 24, // 1 day
       path: '/',

@@ -3,7 +3,7 @@ import type { Hostel } from "../app/search/types";
 
 export const mockHostels: Hostel[] = [
   {
-    id: "1",
+    id: 1,
     slug: "sunrise-hostel-knust",
     name: "Sunrise Hostel",
     campus: "KNUST",
@@ -13,7 +13,7 @@ export const mockHostels: Hostel[] = [
     verified: true,
   },
   {
-    id: "2",
+    id: 2,
     slug: "legon-view-ug",
     name: "Legon View",
     campus: "University of Ghana",
@@ -23,7 +23,7 @@ export const mockHostels: Hostel[] = [
     verified: true,
   },
   {
-    id: "3",
+    id: 3,
     slug: "tech-ridge-uenr",
     name: "Tech Ridge",
     campus: "UENR",
@@ -33,7 +33,7 @@ export const mockHostels: Hostel[] = [
     verified: false,
   },
   {
-    id: "4",
+    id: 4,
     slug: "akwaaba-house-upsa",
     name: "Akwaaba House",
     campus: "UPSA",
@@ -43,7 +43,7 @@ export const mockHostels: Hostel[] = [
     verified: true,
   },
   {
-    id: "5",
+    id: 5,
     slug: "green-gardens-ktu",
     name: "Green Gardens",
     campus: "KTU",
