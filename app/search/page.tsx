@@ -137,7 +137,7 @@ export default function SearchResultsPage() {
 // --- SUB-COMPONENT: HOSTEL CARD ---
 function HostelCard({ hostel: h }: { hostel: Hostel }) {
   const images = typeof h.images === 'string' 
-    ? h.images.split(',').filter(Boolean) 
+    ? h.images.split(',').map(s => s.trim()).filter(Boolean) 
     : (Array.isArray(h.images) ? h.images : []);
   
   const displayImages = images.length > 0 ? images : ["https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=800&q=80"];
@@ -164,6 +164,9 @@ function HostelCard({ hostel: h }: { hostel: Hostel }) {
                src={img} 
                alt={`${h.name} - image ${idx + 1}`} 
                className="w-full h-full object-cover flex-shrink-0"
+               onError={(e) => {
+                 (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=800&q=80";
+               }}
              />
            ))}
          </div>

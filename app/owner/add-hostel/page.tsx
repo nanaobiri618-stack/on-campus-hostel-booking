@@ -42,6 +42,7 @@ export default function AddHostelPage() {
     location: "",
     price: "",
     rooms: "",
+    description: "",
     images: [""]
   });
 
@@ -78,7 +79,6 @@ export default function AddHostelPage() {
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    // ... same handleSubmit logic ...
     e.preventDefault();
     setLoading(true);
     setMessage({ type: "", text: "" });
@@ -141,6 +141,17 @@ export default function AddHostelPage() {
             <label className="text-xs font-bold uppercase text-slate-400 ml-2">Location Address</label>
             <input type="text" placeholder="e.g. Ayeduase Gate, Kumasi" required 
               onChange={(e) => setFormData({...formData, location: e.target.value})} />
+          </div>
+
+          <div>
+            <label className="text-xs font-bold uppercase text-slate-400 ml-2">Hostel Description</label>
+            <textarea 
+              placeholder="Describe your hostel features, distance from campus, etc." 
+              required 
+              rows={3}
+              className="w-full p-4 rounded-xl border-2 border-slate-200 focus:border-blue-500 transition-colors bg-white mt-1"
+              onChange={(e) => setFormData({...formData, description: e.target.value})} 
+            />
           </div>
 
           <div className="grid grid-cols-2 gap-6">

@@ -20,6 +20,7 @@ import {
   Plus,
   BarChart3
 } from "lucide-react";
+import VerificationForm from "./VerificationForm";
 
 export default function OwnerDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -27,6 +28,7 @@ export default function OwnerDashboard() {
   const [students, setStudents] = useState<any[]>([]);
   const [stats, setStats] = useState({ total: 0, verified: 0, pending: 0 });
   const [loading, setLoading] = useState(true);
+  const [userStatus, setUserStatus] = useState<string>('NONE');
 
   const fetchData = async () => {
     try {
@@ -35,6 +37,7 @@ export default function OwnerDashboard() {
       if (res.ok) {
         setStudents(data.students);
         setStats(data.stats);
+        setUserStatus(data.userStatus || 'NONE');
       }
     } catch (err) {
       console.error("Failed to fetch dashboard data");
@@ -147,6 +150,40 @@ export default function OwnerDashboard() {
               <StatCard label="Pending Approval" value={stats.pending} icon={<Clock />} color="amber" active={filter === 'PENDING'} />
             </div>
           </div>
+
+          {userStatus !== 'VERIFIED' && (
+            <div className="animate-in fade-in slide-in-from-top-4 duration-500">
+              {userStatus === 'NONE' || userStatus === 'REJECTED' ? (
+                <div className="space-y-6">
+                  <div className="bg-gradient-to-br from-amber-500/10 to-orange-500/10 border border-amber-500/20 rounded-3xl p-8 backdrop-blur-sm">
+                    <div className="flex flex-col md:flex-row items-center gap-6">
+                      <div className="p-4 bg-amber-500/20 rounded-2xl">
+                        <ShieldCheck className="w-10 h-10 text-amber-600" />
+                      </div>
+                      <div className="flex-1 text-center md:text-left">
+                        <h2 className="text-xl font-bold text-slate-900">Account Verification Required</h2>
+                        <p className="text-slate-600 mt-1">To start verifying students and listing more hostels, please complete your owner verification application below.</p>
+                      </div>
+                    </div>
+                  </div>
+                  <VerificationForm onSuccess={fetchData} />
+                </div>
+              ) : (
+                <div className="bg-blue-600 rounded-3xl p-8 text-white shadow-xl shadow-blue-200 flex items-center justify-between gap-6 overflow-hidden relative">
+                   <div className="absolute -right-10 -bottom-10 opacity-10">
+                     <ShieldCheck size={200} />
+                   </div>
+                   <div className="relative z-10">
+                     <h2 className="text-2xl font-black">Verification Pending</h2>
+                     <p className="text-blue-100 mt-2 font-medium max-w-md">Your application is currently being reviewed by our administrators. We'll notify you once it's approved.</p>
+                   </div>
+                   <div className="p-4 bg-white/20 rounded-2xl backdrop-blur-md relative z-10">
+                     <Clock className="w-8 h-8 animate-pulse" />
+                   </div>
+                </div>
+              )}
+            </div>
+          )}
 
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4 border-t border-slate-200 mt-4">
             <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">

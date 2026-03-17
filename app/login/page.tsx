@@ -26,7 +26,9 @@ export default function LoginPage() {
 
       if (res.ok) {
         // SUCCESS: Route based on the role returned from Prisma
-        if (data.user && data.user.role === "OWNER") {
+        if (data.user && data.user.role === "ADMIN") {
+          router.push("/admin/dashboard");
+        } else if (data.user && data.user.role === "OWNER") {
           router.push("/owner/dashboard");
         } else if (data.user && data.user.role === "TENANT") {
           if (data.user.isVerified) {

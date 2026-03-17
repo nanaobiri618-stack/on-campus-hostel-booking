@@ -70,12 +70,14 @@ export async function POST(request: Request) {
     const newHostel = await (prisma.hostel as any).create({
       data: {
         name: body.name,
-        description: `Rooms: ${body.rooms || 'N/A'}. Location: ${body.location}`, 
+        description: body.description || `Rooms: ${body.rooms || 'N/A'}. Location: ${body.location}`, 
         location: body.location,
         price: parseFloat(body.price),
         ownerId: payload.userId, 
         universityId: universityId,
-        images: Array.isArray(body.images) ? body.images.join(',') : body.images,
+        images: Array.isArray(body.images) 
+          ? body.images.filter((url: string) => url.trim() !== "").join(',') 
+          : body.images,
       },
     });
     

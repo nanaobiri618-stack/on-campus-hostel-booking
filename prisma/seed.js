@@ -1,5 +1,6 @@
 const { PrismaClient } = require('@prisma/client');
 const { PrismaMariaDb } = require('@prisma/adapter-mariadb');
+const bcrypt = require('bcryptjs');
 
 const adapter = new PrismaMariaDb({
   host: '127.0.0.1',
@@ -16,6 +17,28 @@ async function main() {
   console.log('--- Starting Comprehensive Database Seed ---');
 
   try {
+    // 0. Create a Dedicated Admin
+    const adminUsername = 'superadmin';
+    const adminEmail = 'admin@hostelhub.com';
+    const adminPassword = await bcrypt.hash('admin_password_123', 10);
+    
+    await prisma.admin.upsert({
+      where: { username: adminUsername },
+      update: { password: adminPassword },
+      create: {
+        username: adminUsername,
+        email: adminEmail,
+        password: adminPassword,
+      }
+    });
+
+    // Remove any user with ADMIN role to prevent confusion
+    await prisma.user.deleteMany({
+      where: { role: 'ADMIN' }
+    });
+
+    console.log('Dedicated Admin created/found.');
+
     // 1. Create a Default Owner
     let owner = await prisma.user.upsert({
       where: { email: 'owner@hostelhub.com' },

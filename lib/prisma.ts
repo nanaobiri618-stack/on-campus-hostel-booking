@@ -1,36 +1,30 @@
-import { PrismaClient } from '@prisma/client';
+// lib/prisma.ts
 import { PrismaMariaDb } from '@prisma/adapter-mariadb';
+import { PrismaClient } from '@prisma/client';
+
+const CONNECTION_LIMIT = 20;
 
 const prismaClientSingleton = () => {
-  // #region agent log
-  fetch('http://127.0.0.1:7841/ingest/841e6ebf-1340-4009-89e5-bc61a524e4f8', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Debug-Session-Id': 'a29563',
-    },
-    body: JSON.stringify({
-      sessionId: 'a29563',
-      runId: 'pre-fix',
-      hypothesisId: 'H1',
-      location: 'lib/prisma.ts:prismaClientSingleton',
-      message: 'Checking DATABASE_URL visibility for Prisma',
-      data: {
-        hasDatabaseUrl: !!process.env.DATABASE_URL,
-        databaseUrlHostPort: process.env.DATABASE_URL
-          ? process.env.DATABASE_URL.split('@')[1]?.split('/')[0] ?? null
-          : null,
-      },
-      timestamp: Date.now(),
-    }),
-  }).catch(() => {});
-  // #endregion agent log
-
+  console.log('[PRISMA_INIT] Initializing new PrismaClient...');
   if (!process.env.DATABASE_URL) {
+    console.error('[PRISMA_INIT] ERROR: DATABASE_URL is missing!');
     throw new Error('DATABASE_URL environment variable is not set');
   }
+  console.log('[PRISMA_INIT] DATABASE_URL found.');
 
-  const adapter = new PrismaMariaDb(process.env.DATABASE_URL);
+  const dbUrl = new URL(process.env.DATABASE_URL);
+  const isLocal = dbUrl.hostname === 'localhost' || dbUrl.hostname === '127.0.0.1';
+
+  const adapter = new PrismaMariaDb({
+    host: dbUrl.hostname,
+    port: parseInt(dbUrl.port) || 3306,
+    user: dbUrl.username,
+    password: decodeURIComponent(dbUrl.password),
+    database: dbUrl.pathname.slice(1),
+    ssl: isLocal ? undefined : { rejectUnauthorized: false },
+    connectionLimit: CONNECTION_LIMIT,
+    allowPublicKeyRetrieval: true,
+  } as any);
 
   return new PrismaClient({
     adapter,
@@ -39,11 +33,25 @@ const prismaClientSingleton = () => {
 };
 
 declare global {
-  // eslint-disable-next-line no-var
-  var prisma: undefined | ReturnType<typeof prismaClientSingleton>;
+  var prisma_v3: undefined | ReturnType<typeof prismaClientSingleton>;
 }
 
-export const prisma = globalThis.prisma ?? prismaClientSingleton();
+export const prisma: PrismaClient = (() => {
+  if (process.env.NODE_ENV === 'production') {
+    return prismaClientSingleton();
+  }
 
-if (process.env.NODE_ENV !== 'production') globalThis.prisma = prisma;
+  // Use a versioned identifier to force a fresh client if needed
+  const PRISMA_VERSION = 'v3';
+  const globalWithPrisma = globalThis as any;
+  
+  if (!globalWithPrisma[`prisma_${PRISMA_VERSION}`]) {
+    globalWithPrisma[`prisma_${PRISMA_VERSION}`] = prismaClientSingleton();
+  }
+  
+  return globalWithPrisma[`prisma_${PRISMA_VERSION}`];
+})();
 
+if (process.env.NODE_ENV !== 'production') {
+  globalThis.prisma_v3 = prisma;
+}

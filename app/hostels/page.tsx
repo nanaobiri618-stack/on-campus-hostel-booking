@@ -120,9 +120,12 @@ export default function HostelsPage() {
             <div key={hostel.id} className="bg-white rounded-3xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all group">
               <div className="relative h-64">
                 <img 
-                  src={hostel.images || "/hostels/luxury_hostel.png"} 
+                  src={(hostel.images?.split(',').map((s: string) => s.trim()).filter(Boolean)[0]) || "/hostels/luxury_hostel.png"} 
                   alt={hostel.name} 
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = "/hostels/luxury_hostel.png";
+                  }}
                 />
                 <button className="absolute top-4 right-4 p-2.5 bg-white/20 backdrop-blur-md rounded-full text-white hover:bg-white transition">
                   <Heart size={20} className="hover:text-red-500 transition-colors" />

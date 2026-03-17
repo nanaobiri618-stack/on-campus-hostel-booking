@@ -35,17 +35,46 @@ export function proxy(request: NextRequest) {
     // Redirect away from login/register if already logged in
     if (isAuthPage) {
       const url = request.nextUrl.clone();
-      url.pathname = payload.role === 'OWNER' ? '/owner/dashboard' : '/hostels';
+      if (payload.role === 'ADMIN') {
+        url.pathname = '/admin/dashboard';
+      } else if (payload.role === 'OWNER') {
+        url.pathname = '/owner/dashboard';
+      } else {
+        url.pathname = '/hostels';
+      }
       return NextResponse.redirect(url);
     }
 
-    // Redirect students away from root to hostels
-    if (pathname === '/' && payload.role === 'TENANT') {
+    // Redirect logged-in users away from root
+    if (pathname === '/') {
       const url = request.nextUrl.clone();
-      url.pathname = payload.isVerified ? '/hostels' : '/pending-verification';
+      if (payload.role === 'ADMIN') {
+        url.pathname = '/admin/dashboard';
+      } else if (payload.role === 'OWNER') {
+        url.pathname = '/owner/dashboard';
+      } else if (payload.role === 'TENANT') {
+        url.pathname = payload.isVerified ? '/hostels' : '/pending-verification';
+      }
+      
+      // ONLY redirect if the pathname actually changed to prevent loops
+      if (url.pathname !== '/') {
+        return NextResponse.redirect(url);
+      }
+    }
+
+    // Role-based access control
+    if (pathname.startsWith('/admin') && payload.role !== 'ADMIN') {
+      const url = request.nextUrl.clone();
+      url.pathname = '/login';
       return NextResponse.redirect(url);
     }
 
+    if (pathname.startsWith('/owner') && payload.role !== 'OWNER' && payload.role !== 'ADMIN') {
+      const url = request.nextUrl.clone();
+      url.pathname = '/login'; 
+      return NextResponse.redirect(url);
+    }
+    
     // Handle verification status for tenants
     // ALLOW BROWSING (hostels/search) even if not verified
     const isBrowsingRoute = pathname.startsWith('/hostels') || pathname.startsWith('/search');
@@ -60,13 +89,6 @@ export function proxy(request: NextRequest) {
     if (payload.role === 'TENANT' && payload.isVerified && pathname === '/pending-verification') {
       const url = request.nextUrl.clone();
       url.pathname = '/hostels';
-      return NextResponse.redirect(url);
-    }
-
-    // Role-based access control
-    if (pathname.startsWith('/owner') && payload.role !== 'OWNER') {
-      const url = request.nextUrl.clone();
-      url.pathname = '/hostels'; 
       return NextResponse.redirect(url);
     }
   }

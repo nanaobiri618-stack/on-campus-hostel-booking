@@ -1,6 +1,5 @@
 datasource db {
   provider = "mysql"
-  url      = env("DATABASE_URL")
 }
 
 generator client {
@@ -20,14 +19,35 @@ model User {
   roomNumber   String?
   location     String?
   isVerified   Boolean  @default(false)
-  phone        String?
-  businessName String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  phone            String?
+  businessName     String?
+  gpsAddress       String?
+  ghanaCard        String?
+  legalDocs        String?
+  verificationStatus String @default("NONE") // NONE, PENDING, VERIFIED, REJECTED
+  verificationNotes String? @db.Text
+  verification     OwnerVerification?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
   hostels      Hostel[] 
   bookings     Booking[]
 
   @@map("user")
+}
+
+model OwnerVerification {
+  id              Int      @id @default(autoincrement())
+  userId          Int      @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ownerPhoto      String?
+  idCardPhoto     String?
+  facilitiesPhoto String?
+  utilities       String?
+  roomSize        String?
+  verifiedPrices  String?
+  updatedAt       DateTime @updatedAt
+
+  @@map("owner_verification")
 }
 
 model Hostel {
@@ -73,6 +93,14 @@ model Booking {
 }
 
 enum Role {
+  ADMIN
   OWNER
   TENANT
+}
+model Admin {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
 }

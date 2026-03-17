@@ -16,7 +16,15 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
-    // 1. Get all hostels owned by this user
+    const owner = await prisma.user.findUnique({
+      where: { id: payload.userId },
+      include: { verification: true }
+    });
+
+    if (!owner) {
+      return NextResponse.json({ error: 'Owner not found' }, { status: 404 });
+    }
+
     const ownerHostels = await prisma.hostel.findMany({
       where: { ownerId: payload.userId },
       select: { id: true }
@@ -82,7 +90,11 @@ export async function GET(request: Request) {
       pending: formattedStudents.filter((s: any) => s.status !== 'VERIFIED').length
     };
 
-    return NextResponse.json({ students: formattedStudents, stats });
+    return NextResponse.json({ 
+      students: formattedStudents, 
+      stats,
+      userStatus: owner.verificationStatus 
+    });
   } catch (error) {
     console.error('OWNER_STUDENTS_ERROR:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

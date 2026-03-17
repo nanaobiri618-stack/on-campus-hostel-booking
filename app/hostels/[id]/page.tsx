@@ -119,9 +119,12 @@ export default function HostelDetailsPage() {
           <div className="lg:col-span-2 space-y-8">
             <div className="aspect-video bg-slate-200 rounded-[2.5rem] overflow-hidden shadow-2xl relative">
               <img 
-                src={hostel.images || "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=1200&q=80"} 
+                src={(hostel.images?.split(',').map((s: string) => s.trim()).filter(Boolean)[0]) || "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=1200&q=80"} 
                 alt={hostel.name} 
                 className="w-full h-full object-cover"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=1200&q=80";
+                }}
               />
               <div className="absolute top-6 left-6 bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-xl flex items-center gap-2 shadow-xl shadow-blue-500/40">
                 <ShieldCheck size={14} /> Verified Property
