@@ -80,6 +80,16 @@ export async function POST(request: Request) {
           : body.images,
       },
     });
+
+    // Auto-sync owner info
+    await prisma.user.update({
+      where: { id: payload.userId },
+      data: {
+        hostelName: body.name,
+        location: body.location,
+        businessName: body.name, // Use hostel name as business name if not set
+      }
+    });
     
     return NextResponse.json(newHostel, { status: 201 });
   } catch (error) {

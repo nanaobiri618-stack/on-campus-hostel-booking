@@ -60,6 +60,41 @@ export default function AddHostelPage() {
     setFormData({ ...formData, images: newImages });
   };
 
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setLoading(true);
+    setMessage({ type: "", text: "" });
+
+    try {
+      const uploadData = new FormData();
+      uploadData.append('file', file);
+
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: uploadData,
+      });
+
+      if (!res.ok) throw new Error('Upload failed');
+      const data = await res.json();
+      
+      // Add the uploaded url to the images array replacing the first empty string if any, else append
+      const newImages = [...formData.images];
+      const emptyIndex = newImages.findIndex(url => url === "");
+      if (emptyIndex !== -1) {
+        newImages[emptyIndex] = data.url;
+      } else {
+        newImages.push(data.url);
+      }
+      setFormData({ ...formData, images: newImages });
+    } catch (err: any) {
+      setMessage({ type: "error", text: "Failed to upload image. Please try again." });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetch('/api/universities')
       .then(res => res.json())
@@ -189,7 +224,7 @@ export default function AddHostelPage() {
             </button>
             
             <div className="border-2 border-dashed border-slate-200 rounded-2xl p-6 text-center hover:border-blue-300 transition-colors">
-              <input type="file" className="hidden" id="thumbnail-upload" />
+              <input type="file" className="hidden" id="thumbnail-upload" accept="image/*" onChange={handleFileUpload} />
               <label htmlFor="thumbnail-upload" className="cursor-pointer">
                 <Upload className="mx-auto mb-2 text-slate-300" size={32} />
                 <p className="text-sm font-bold text-slate-500">Upload Thumbnail</p>

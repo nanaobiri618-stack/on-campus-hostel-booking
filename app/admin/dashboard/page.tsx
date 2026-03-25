@@ -19,6 +19,7 @@ import {
   Info
 } from "lucide-react";
 import VerificationModal from "./VerificationModal";
+import UserDetailsModal from "./UserDetailsModal";
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('users'); // users, hostels, bookings
@@ -28,6 +29,7 @@ export default function AdminDashboard() {
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
   const [selectedUser, setSelectedUser] = useState<any | null>(null);
   const [showVerifyModal, setShowVerifyModal] = useState(false);
+  const [detailsUser, setDetailsUser] = useState<any | null>(null);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -304,7 +306,7 @@ export default function AdminDashboard() {
                         )}
                         <td className="px-8 py-6 text-right">
                             <div className="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity translate-x-4 group-hover:translate-x-0">
-                            <button title="Edit Record" className="h-10 w-10 flex items-center justify-center bg-white border border-slate-200 text-slate-600 hover:text-blue-600 hover:border-blue-200 rounded-xl transition-all shadow-sm">
+                            <button onClick={() => { if (activeTab === 'users') setDetailsUser(item); }} title="View Full Details" className="h-10 w-10 flex items-center justify-center bg-white border border-slate-200 text-slate-600 hover:text-blue-600 hover:border-blue-200 rounded-xl transition-all shadow-sm">
                                 <Edit size={18} />
                             </button>
                             <button onClick={() => handleDelete(item.id)} title="Purge Record" className="h-10 w-10 flex items-center justify-center bg-white border border-slate-200 text-slate-400 hover:text-red-600 hover:border-red-200 rounded-xl transition-all shadow-sm">
@@ -345,6 +347,13 @@ export default function AdminDashboard() {
           user={selectedUser} 
           onClose={() => { setShowVerifyModal(false); setSelectedUser(null); }}
           onSuccess={() => fetchData(activeTab)}
+        />
+      )}
+
+      {detailsUser && (
+        <UserDetailsModal 
+          user={detailsUser}
+          onClose={() => setDetailsUser(null)}
         />
       )}
     </div>

@@ -99,7 +99,7 @@ export default function StudentBookingsPage() {
                   ) : (
                     <div className="flex items-center gap-2 text-green-600 font-bold text-xs justify-center pt-2">
                       <CheckCircle2 size={16} /> 
-                      {booking.status === 'PAID' ? 'Awaiting Admin Verification' : 'Verified & Confirmed'}
+                      {booking.status === 'PAID' ? 'Awaiting Owner Verification' : 'Verified & Confirmed'}
                     </div>
                   )}
                 </div>

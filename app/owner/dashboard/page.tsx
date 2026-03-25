@@ -111,7 +111,14 @@ export default function OwnerDashboard() {
       {/* --- MAIN CONTENT --- */}
       <main className="flex-1 flex flex-col min-w-0">
         <header className="glass-header px-6 py-4 flex items-center justify-between bg-white/80 backdrop-blur-md sticky top-0 z-10 border-b">
-          <h2 className="text-lg font-bold text-slate-800 uppercase tracking-wider text-xs">Owner Administration</h2>
+          <div className="flex items-center gap-3">
+            <h2 className="text-lg font-bold text-slate-800 uppercase tracking-wider text-xs">Owner Administration</h2>
+            {userStatus === 'VERIFIED' && (
+              <span className="px-2.5 py-1 bg-green-100 text-green-700 border border-green-200 rounded-md text-[10px] font-black uppercase tracking-widest flex items-center gap-1">
+                <CheckCircle size={12} /> Verified Owner
+              </span>
+            )}
+          </div>
           <div className="flex items-center gap-4">
             <Link href="/owner/students" className="relative p-2.5 bg-white border border-slate-200 rounded-full shadow-sm">
               <Bell size={20} className="text-slate-600" />

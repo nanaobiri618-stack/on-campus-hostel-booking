@@ -1,15 +1,29 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from 'next/link';
 import { Home, LayoutDashboard, Users, CreditCard, Settings, LogOut, ArrowRight } from "lucide-react";
 
 export default function OwnerPaymentsPage() {
   const [showDemo, setShowDemo] = useState<string | null>(null);
+  const [payments, setPayments] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const payments = [
-    { id: 1, student: "Jes", hostel: "j", amount: "2,500", method: "MTN MoMo", status: "Success", date: "2026-03-12" },
-    { id: 2, student: "Kwame", hostel: "Hostel A", amount: "1,200", method: "Paystack", status: "Pending", date: "2026-03-11" },
-  ];
+  useEffect(() => {
+    const fetchPayments = async () => {
+      try {
+        const res = await fetch('/api/owner/payments');
+        if (res.ok) {
+          const data = await res.json();
+          setPayments(data.payments || []);
+        }
+      } catch (err) {
+        console.error("Failed to fetch payments");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPayments();
+  }, []);
 
   return (
     <div className="flex min-h-screen bg-slate-50">
@@ -65,7 +79,15 @@ export default function OwnerPaymentsPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
-              {payments.map(p => (
+              {loading ? (
+                <tr>
+                  <td colSpan={5} className="px-6 py-8 text-center text-slate-400 font-medium">Loading payments...</td>
+                </tr>
+              ) : payments.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="px-6 py-8 text-center text-slate-400 font-medium">No payments found.</td>
+                </tr>
+              ) : payments.map(p => (
                 <tr key={p.id} className="hover:bg-slate-50/50 transition-colors">
                   <td className="px-6 py-5 font-bold text-slate-900">{p.student}</td>
                   <td className="px-6 py-5 text-sm font-medium text-slate-500">{p.hostel}</td>
