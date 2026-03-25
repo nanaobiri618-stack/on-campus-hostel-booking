@@ -1,14 +1,19 @@
 const { PrismaClient } = require('@prisma/client');
 const { PrismaMariaDb } = require('@prisma/adapter-mariadb');
 const bcrypt = require('bcryptjs');
+require('dotenv').config();
 
+const dbUrl = new URL(process.env.DATABASE_URL);
 const adapter = new PrismaMariaDb({
-  host: '127.0.0.1',
-  user: 'root',
-  password: 'Kwesiobiri@8',
-  database: 'oncampus_db',
-  port: 3306,
-  connectionLimit: 10
+  host: dbUrl.hostname,
+  port: parseInt(dbUrl.port) || 3306,
+  user: dbUrl.username,
+  password: decodeURIComponent(dbUrl.password),
+  database: dbUrl.pathname.slice(1),
+  ssl: { rejectUnauthorized: false },
+  connectionLimit: 10,
+  connectTimeout: 30000,
+  allowPublicKeyRetrieval: true,
 });
 
 const prisma = new PrismaClient({ adapter });
