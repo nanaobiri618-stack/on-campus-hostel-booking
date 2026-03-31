@@ -9,9 +9,11 @@ const prismaClientSingleton = () => {
   const dbUrlString = process.env.DATABASE_URL;
 
   if (!dbUrlString) {
-    console.warn('[PRISMA_INIT] WARNING: DATABASE_URL is missing! Returning a client that will fail at runtime.');
-    // Return a client with a dummy URL to avoid immediate failure during Next.js build
-    return new PrismaClient(); 
+    if (process.env.NODE_ENV === 'production') {
+       console.warn('[PRISMA_INIT] WARNING: DATABASE_URL is missing in PRODUCTION/BUILD.');
+    }
+    // Return a dummy client for build-time safety
+    return new PrismaClient();
   }
 
   console.log('[PRISMA_INIT] DATABASE_URL found.');
@@ -35,26 +37,27 @@ const prismaClientSingleton = () => {
   });
 };
 
+const PRISMA_VERSION = 'v4';
 declare global {
-  var prisma_v3: undefined | ReturnType<typeof prismaClientSingleton>;
+  var prisma_v4: undefined | ReturnType<typeof prismaClientSingleton>;
 }
 
-export const prisma: PrismaClient = (() => {
-  if (process.env.NODE_ENV === 'production') {
-    return prismaClientSingleton();
-  }
+// Lazy-loaded prisma instance
+let _prisma: PrismaClient | null = null;
 
-  // Use a versioned identifier to force a fresh client if needed
-  const PRISMA_VERSION = 'v3';
-  const globalWithPrisma = globalThis as any;
-  
-  if (!globalWithPrisma[`prisma_${PRISMA_VERSION}`]) {
-    globalWithPrisma[`prisma_${PRISMA_VERSION}`] = prismaClientSingleton();
-  }
-  
-  return globalWithPrisma[`prisma_${PRISMA_VERSION}`];
-})();
-
-if (process.env.NODE_ENV !== 'production') {
-  globalThis.prisma_v3 = prisma;
-}
+export const prisma: PrismaClient = new Proxy({} as PrismaClient, {
+  get: (target, prop, receiver) => {
+    if (!_prisma) {
+      if (process.env.NODE_ENV === 'production') {
+        _prisma = prismaClientSingleton();
+      } else {
+        const globalWithPrisma = globalThis as any;
+        if (!globalWithPrisma[`prisma_${PRISMA_VERSION}`]) {
+          globalWithPrisma[`prisma_${PRISMA_VERSION}`] = prismaClientSingleton();
+        }
+        _prisma = globalWithPrisma[`prisma_${PRISMA_VERSION}`];
+      }
+    }
+    return Reflect.get(_prisma!, prop, receiver);
+  },
+});
