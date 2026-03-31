@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { verifyJwt } from '@/lib/auth';
 
+export const dynamic = 'force-dynamic';
+
 // --- 1. GET: Fetch all hostels ---
 export async function GET() {
   try {
