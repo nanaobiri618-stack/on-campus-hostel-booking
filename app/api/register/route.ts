@@ -70,10 +70,18 @@ export async function POST(request: Request) {
       createdAt: result.createdAt
     }, { status: 201 });
   } catch (error: any) {
+    console.error('SIGNUP_ERROR_DETAILS:', {
+      message: error.message,
+      code: error.code,
+      meta: error.meta,
+      stack: error.stack
+    });
     if (error?.code === 'P2002') {
       return NextResponse.json({ error: 'A user with this email or unique ID already exists' }, { status: 409 });
     }
-    console.error('SIGNUP_ERROR:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    return NextResponse.json({ 
+      error: 'Internal Server Error', 
+      debug: process.env.NODE_ENV === 'development' ? error.message : undefined 
+    }, { status: 500 });
   }
 }

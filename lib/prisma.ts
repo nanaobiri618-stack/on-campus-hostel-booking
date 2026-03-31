@@ -18,6 +18,7 @@ const prismaClientSingleton = () => {
 
   console.log('[PRISMA_INIT] DATABASE_URL found.');
   const dbUrl = new URL(dbUrlString);
+  console.log(`[PRISMA_INIT] Connecting to host: ${dbUrl.hostname}, database: ${dbUrl.pathname.slice(1)}`);
   const isLocal = dbUrl.hostname === 'localhost' || dbUrl.hostname === '127.0.0.1';
 
   const adapter = new PrismaMariaDb({
