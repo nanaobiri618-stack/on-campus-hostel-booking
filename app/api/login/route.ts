@@ -111,8 +111,16 @@ export async function POST(request: Request) {
     });
 
     return response;
-  } catch (error) {
-    console.error('LOGIN_ERROR:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  } catch (error: any) {
+    console.error('LOGIN_ERROR_DETAILS:', {
+      message: error.message,
+      code: error.code,
+      meta: error.meta,
+      stack: error.stack
+    });
+    return NextResponse.json({ 
+      error: 'Internal Server Error',
+      debug: process.env.NODE_ENV === 'development' ? error.message : undefined
+    }, { status: 500 });
   }
 }
