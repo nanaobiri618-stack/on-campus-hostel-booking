@@ -6,13 +6,16 @@ const CONNECTION_LIMIT = 20;
 
 const prismaClientSingleton = () => {
   console.log('[PRISMA_INIT] Initializing new PrismaClient...');
-  if (!process.env.DATABASE_URL) {
-    console.error('[PRISMA_INIT] ERROR: DATABASE_URL is missing!');
-    throw new Error('DATABASE_URL environment variable is not set');
-  }
-  console.log('[PRISMA_INIT] DATABASE_URL found.');
+  const dbUrlString = process.env.DATABASE_URL;
 
-  const dbUrl = new URL(process.env.DATABASE_URL);
+  if (!dbUrlString) {
+    console.warn('[PRISMA_INIT] WARNING: DATABASE_URL is missing! Returning a client that will fail at runtime.');
+    // Return a client with a dummy URL to avoid immediate failure during Next.js build
+    return new PrismaClient(); 
+  }
+
+  console.log('[PRISMA_INIT] DATABASE_URL found.');
+  const dbUrl = new URL(dbUrlString);
   const isLocal = dbUrl.hostname === 'localhost' || dbUrl.hostname === '127.0.0.1';
 
   const adapter = new PrismaMariaDb({
