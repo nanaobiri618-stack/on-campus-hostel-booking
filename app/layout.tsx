@@ -2,10 +2,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import "./globals.css";
-import { Inter } from "next/font/google"; // 1. Use Google Font instead of local
-
-// 2. Initialize Inter
-const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   // Add this line to fix the warning
@@ -19,8 +15,8 @@ import { Navbar } from "./components/Navbar";
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      {/* 3. Apply inter.className to the body */}
-      <body className={`${inter.className} bg-slate-50 text-slate-900 antialiased`}>
+      <body className={`font-sans bg-slate-50 text-slate-900 antialiased`}>
+
         
         <Navbar />
 
