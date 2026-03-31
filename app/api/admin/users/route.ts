@@ -3,6 +3,8 @@ import { verifyJwt } from '@/lib/auth';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
+export const dynamic = 'force-dynamic';
+
 // Helper to check for Admin role
 async function checkAdmin(request: Request) {
   const cookieStore = await cookies();
