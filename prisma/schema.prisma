@@ -41,12 +41,12 @@ model OwnerVerification {
   id              Int      @id @default(autoincrement())
   userId          Int      @unique
   user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  ownerPhoto      String?
-  idCardPhoto     String?
-  facilitiesPhoto String?
-  utilities       String?
-  roomSize        String?
-  verifiedPrices  String?
+  ownerPhoto      String?  @db.LongText
+  idCardPhoto     String?  @db.LongText
+  facilitiesPhoto String?  @db.LongText
+  utilities       String?  @db.LongText
+  roomSize        String?  @db.LongText
+  verifiedPrices  String?  @db.LongText
   updatedAt       DateTime @updatedAt
 
   @@map("owner_verification")

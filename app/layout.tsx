@@ -45,7 +45,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             {/* Section 3 */}
             <div>
               <p className="font-bold text-slate-900 uppercase text-xs tracking-widest">Support</p>
-              <p className="mt-2 text-sm text-slate-500">Contact us: support@oncampusgh.com</p>
+              <p className="mt-2 text-sm text-slate-500">Contact us: nanaobiri618@gmail.com</p>
             </div>
 
           </div>

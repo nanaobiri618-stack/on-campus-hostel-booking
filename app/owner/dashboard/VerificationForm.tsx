@@ -37,23 +37,23 @@ export default function VerificationForm({ onSuccess }: VerificationFormProps) {
     setLoading(true);
     setError(null);
     try {
-      const formData = new FormData();
-      formData.append('file', file);
-
-      const res = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!res.ok) {
-        throw new Error('Upload failed');
+      // Check file size (limit to 2MB for Base64 storage)
+      if (file.size > 2 * 1024 * 1024) {
+        throw new Error('Image too large. Please upload an image smaller than 2MB.');
       }
 
-      const data = await res.json();
-      setFormData(prev => ({ ...prev, [fieldName]: data.url }));
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result as string;
+        setFormData(prev => ({ ...prev, [fieldName]: base64String }));
+        setLoading(false);
+      };
+      reader.onerror = () => {
+        throw new Error('Failed to read file');
+      };
+      reader.readAsDataURL(file);
     } catch (err: any) {
-      setError('Failed to upload image. Please try again.');
-    } finally {
+      setError(err.message || 'Failed to process image. Please try again.');
       setLoading(false);
     }
   };

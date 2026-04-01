@@ -64,7 +64,7 @@ export default function PendingVerificationPage() {
         </div>
 
         <p className="mt-8 text-slate-400 text-xs font-medium flex items-center justify-center gap-1">
-          <MessageSquare size={14} /> Need help? Contact support at support@hostelhub.com
+          <MessageSquare size={14} /> Need help? Contact support at nanaobiri618@gmail.com
         </p>
       </div>
     </main>

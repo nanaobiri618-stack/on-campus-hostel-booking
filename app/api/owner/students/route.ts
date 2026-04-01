@@ -35,7 +35,10 @@ export async function GET(request: Request) {
     const hostelIds = ownerHostels.map((h: any) => h.id);
 
     if (hostelIds.length === 0) {
-      return NextResponse.json({ students: [], stats: { total: 0, verified: 0, paid: 0, applied: 0 } });
+      return NextResponse.json({ 
+        students: [], 
+        stats: { total: 0, verified: 0, paid: 0, applied: 0, pending: 0 } 
+      });
     }
 
     // 2. Find all formal bookings for these hostels
@@ -52,7 +55,8 @@ export async function GET(request: Request) {
             email: true,
             uniqueNumber: true,
             schoolName: true,
-            phone: true
+            phone: true,
+            roomNumber: true
           }
         },
         hostel: {
