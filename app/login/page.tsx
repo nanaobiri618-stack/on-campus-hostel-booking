@@ -30,8 +30,8 @@ export default function LoginPage() {
           router.push("/admin/dashboard");
         } else if (data.user && data.user.role?.toUpperCase().trim() === "OWNER") {
           router.push("/owner/dashboard");
-        } else if (data.user && data.user.role === "TENANT") {
-          if (data.user.isVerified) {
+        } else if (data.user && data.user.role?.toUpperCase().trim() === "TENANT") {
+          if (!!data.user.isVerified) {
             router.push("/hostels");
           } else {
             router.push("/pending-verification");
