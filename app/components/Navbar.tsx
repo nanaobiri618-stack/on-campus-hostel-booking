@@ -60,7 +60,7 @@ export function Navbar() {
               {user.role === 'TENANT' && (
                 <>
                   <Link href="/hostels" className="text-sm font-bold text-slate-600 hover:text-blue-600 transition-colors uppercase tracking-tight">Discover</Link>
-                  <Link href="/student/bookings" className="text-sm font-bold text-slate-600 hover:text-blue-600 transition-colors uppercase tracking-tight">My Bookings</Link>
+                  <Link href="/student/dashboard" className="text-sm font-bold text-slate-600 hover:text-blue-600 transition-colors uppercase tracking-tight">Dashboard</Link>
                 </>
               )}
             </>
