@@ -38,7 +38,7 @@ export default function PendingVerificationPage() {
               try {
                 const res = await fetch('/api/auth/session');
                 const data = await res.json();
-                if (data.user && data.user.isVerified) {
+                if (data.user && !!data.user.isVerified) {
                   window.location.href = '/hostels';
                 } else {
                   alert("Your account is still pending verification.");

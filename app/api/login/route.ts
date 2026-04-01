@@ -91,6 +91,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
     }
 
+    console.log(`[LOGIN] User ${user.email} isVerified from DB:`, user.isVerified);
+
     const ok = await bcrypt.compare(password, user.password);
     if (!ok) {
       return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });

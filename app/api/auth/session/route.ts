@@ -4,10 +4,12 @@ import { NextResponse } from 'next/server';
 export const dynamic = 'force-dynamic';
 import { verifyJwt, signJwt } from '@/lib/auth';
 
+import { cookies } from 'next/headers';
+
 export async function GET(request: Request) {
   try {
-    const cookie = request.headers.get('cookie');
-    const token = cookie?.split('auth_token=')[1]?.split(';')[0];
+    const cookieStore = await cookies();
+    const token = cookieStore.get('auth_token')?.value;
 
     if (!token) {
       return NextResponse.json({ error: 'No token provided' }, { status: 401 });
@@ -35,6 +37,8 @@ export async function GET(request: Request) {
       where: { id: payload.userId },
       select: { id: true, email: true, name: true, role: true, isVerified: true },
     }) as any;
+
+    console.log(`[SESSION] User ${payload.userId} isVerified from DB:`, user?.isVerified);
 
     if (!user && payload.role === 'ADMIN') {
       const p = prisma as any;
