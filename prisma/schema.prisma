@@ -58,7 +58,7 @@ model Hostel {
   description  String?
   location     String
   price        Float
-  images       String?
+  images       String?     @db.LongText
   createdAt    DateTime    @default(now())
   owner        User        @relation(fields: [ownerId], references: [id])
   ownerId      Int

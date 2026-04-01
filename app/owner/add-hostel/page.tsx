@@ -68,29 +68,32 @@ export default function AddHostelPage() {
     setMessage({ type: "", text: "" });
 
     try {
-      const uploadData = new FormData();
-      uploadData.append('file', file);
-
-      const res = await fetch('/api/upload', {
-        method: 'POST',
-        body: uploadData,
-      });
-
-      if (!res.ok) throw new Error('Upload failed');
-      const data = await res.json();
-      
-      // Add the uploaded url to the images array replacing the first empty string if any, else append
-      const newImages = [...formData.images];
-      const emptyIndex = newImages.findIndex(url => url === "");
-      if (emptyIndex !== -1) {
-        newImages[emptyIndex] = data.url;
-      } else {
-        newImages.push(data.url);
+      // Limit to 2MB for Base64 storage
+      if (file.size > 2 * 1024 * 1024) {
+        throw new Error('Image too large. Please upload an image smaller than 2MB.');
       }
-      setFormData({ ...formData, images: newImages });
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result as string;
+        
+        // Add the uploaded url to the images array replacing the first empty string if any, else append
+        const newImages = [...formData.images];
+        const emptyIndex = newImages.findIndex(url => url === "");
+        if (emptyIndex !== -1) {
+          newImages[emptyIndex] = base64String;
+        } else {
+          newImages.push(base64String);
+        }
+        setFormData({ ...formData, images: newImages });
+        setLoading(false);
+      };
+      reader.onerror = () => {
+        throw new Error('Failed to read file');
+      };
+      reader.readAsDataURL(file);
     } catch (err: any) {
-      setMessage({ type: "error", text: "Failed to upload image. Please try again." });
-    } finally {
+      setMessage({ type: "error", text: err.message || "Failed to process image. Please try again." });
       setLoading(false);
     }
   };
