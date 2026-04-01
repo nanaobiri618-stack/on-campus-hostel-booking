@@ -108,24 +108,37 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* 4. APP DOWNLOAD CTA */}
+      {/* 4. QR CODE SECTION */}
       <section
-        className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between rounded-2xl border bg-white p-8 shadow-sm"
-        aria-label="Get the app"
+        className="flex flex-col gap-8 md:flex-row md:items-center md:justify-between rounded-[2.5rem] border bg-white p-10 shadow-xl shadow-slate-200/50"
+        aria-label="Scan to visit"
       >
-        <div>
-          <h2 className="text-xl font-bold text-slate-900">Get the App</h2>
-          <p className="text-sm text-slate-500">
-            Manage bookings and alerts on the go. iOS and Android supported.
+        <div className="max-w-md">
+          <div className="h-12 w-12 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center mb-6">
+            <Zap size={24} />
+          </div>
+          <h2 className="text-3xl font-black text-slate-900 tracking-tight mb-3">Visit on Mobile</h2>
+          <p className="text-slate-500 font-medium leading-relaxed">
+            Scan this QR code to access On Campus Ghana directly from your smartphone. Manage your bookings, search hostels, and find locations on the go.
           </p>
+          <div className="mt-8 flex items-center gap-2 text-xs font-black text-slate-400 uppercase tracking-widest">
+            <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></div>
+            Live Service Optimized
+          </div>
         </div>
-        <div className="flex gap-3">
-          <a href="#" className="rounded-lg bg-slate-900 px-4 py-2 text-white text-sm hover:bg-slate-800 transition">
-             App Store
-          </a>
-          <a href="#" className="rounded-lg bg-green-600 px-4 py-2 text-white text-sm hover:bg-green-700 transition">
-            ▶ Google Play
-          </a>
+        
+        <div className="relative group mx-auto md:mx-0">
+          <div className="absolute -inset-4 bg-gradient-to-tr from-blue-500 to-indigo-600 rounded-[2rem] opacity-20 blur-xl group-hover:opacity-30 transition duration-1000"></div>
+          <div className="relative bg-white p-6 rounded-[2rem] border-2 border-slate-100 shadow-2xl">
+            <img 
+              src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://on-campus-hostel-booking.onrender.com" 
+              alt="QR Code to visit On Campus Ghana"
+              className="w-40 h-40 md:w-48 md:h-48"
+            />
+            <div className="mt-4 text-center">
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-tighter">Scan to open live app</p>
+            </div>
+          </div>
         </div>
       </section>
 
