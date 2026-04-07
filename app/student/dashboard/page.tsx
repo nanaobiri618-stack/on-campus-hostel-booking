@@ -168,12 +168,26 @@ export default function StudentDashboard() {
                         {/* Booking Details */}
                         <div className="space-y-4">
                           <div className="bg-slate-50 p-6 rounded-3xl space-y-3">
+                            <DetailRow label="Room Number" value={profile?.roomNumber || "Assigning..."} />
+                            <DetailRow label="Stay Duration" value={`${profile?.durationMonths || "N/A"} Months`} />
+                            <DetailRow label="Expires On" value={profile?.expiresAt ? new Date(profile.expiresAt).toLocaleDateString() : "N/A"} />
                             <DetailRow label="Transaction ID" value={booking.verificationId || "Pending"} />
                             <DetailRow label="Telecom" value={booking.telecom?.toUpperCase() || "N/A"} />
-                            <DetailRow label="Payment Phone" value={booking.paymentPhone || "N/A"} />
-                            <DetailRow label="Date" value={new Date(booking.createdAt).toLocaleDateString()} />
+                            <DetailRow label="Date Paid" value={new Date(booking.createdAt).toLocaleDateString()} />
                           </div>
                           
+                          {profile?.expiresAt && new Date() > new Date(profile.expiresAt) && (
+                            <div className="p-4 bg-red-50 border border-red-100 rounded-2xl flex items-start gap-3 animate-pulse">
+                              <AlertCircle className="text-red-500 shrink-0 mt-0.5" size={18} />
+                              <div>
+                                <p className="text-xs font-black text-red-700 uppercase mb-1">Stay Expired</p>
+                                <p className="text-[10px] text-red-600 font-medium leading-relaxed">
+                                  Your stay duration has ended. Please contact the owner for renewal or make a new booking to avoid being logged out.
+                                </p>
+                              </div>
+                            </div>
+                          )}
+
                           <div className="flex gap-4">
                             <Link 
                               href={`/hostels/${booking.hostelId}`}

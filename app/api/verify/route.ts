@@ -14,11 +14,15 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
-    const { id, roomNumber } = await request.json();
+    const { id, roomNumber, durationMonths } = await request.json();
 
     if (!id) {
       return NextResponse.json({ error: 'Student ID is required' }, { status: 400 });
     }
+
+    const duration = parseInt(durationMonths) || 12; // Default to 12 months if not provided
+    const expiresAt = new Date();
+    expiresAt.setMonth(expiresAt.getMonth() + duration);
 
     // Update the booking for this student at one of the owner's hostels
     const ownerHostels = await prisma.hostel.findMany({
@@ -47,7 +51,11 @@ export async function POST(request: Request) {
         hostelId: { in: hostelIds },
         status: { in: ['PAID', 'APPLIED'] }
       },
-      data: { status: 'VERIFIED' }
+      data: { 
+        status: 'VERIFIED',
+        durationMonths: duration,
+        expiresAt: expiresAt
+      }
     });
 
     // Also update the user's verified status and assign room/hostel
@@ -60,7 +68,10 @@ export async function POST(request: Request) {
       }
     });
 
-    return NextResponse.json({ message: 'Payment verified successfully' });
+    return NextResponse.json({ 
+      message: 'Payment verified successfully',
+      expiresAt: expiresAt.toISOString()
+    });
   } catch (error) {
     console.error('VERIFY_ERROR:', error);
     return NextResponse.json({ error: 'Student not found or verification failed' }, { status: 404 });

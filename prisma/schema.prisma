@@ -90,6 +90,8 @@ model Booking {
   telecom        String?
   verificationId String?  @unique
   status         String   @default("APPLIED") // APPLIED, PAID, VERIFIED, CANCELLED
+  durationMonths Int?     // Number of months paid for
+  expiresAt      DateTime? // The checkout/expiry date
   createdAt      DateTime @default(now())
 
   @@map("booking")

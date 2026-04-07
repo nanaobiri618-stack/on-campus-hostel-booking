@@ -52,14 +52,21 @@ export default function OwnerDashboard() {
 
   const handleVerify = async (id: number) => {
     const roomNumber = window.prompt("Enter Room Number to assign to this student (e.g., Room 204):");
-    if (roomNumber === null) return; // Cancelled
+    if (roomNumber === null) return;
+
+    const durationMonths = window.prompt("Enter Duration of Stay in Months (e.g., 12):", "12");
+    if (durationMonths === null) return;
 
     setVerifying(id);
     try {
       const res = await fetch('/api/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, roomNumber }),
+        body: JSON.stringify({ 
+          id, 
+          roomNumber,
+          durationMonths: parseInt(durationMonths) || 12
+        }),
       });
       if (res.ok) {
         fetchData();
