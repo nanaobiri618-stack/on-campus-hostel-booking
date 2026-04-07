@@ -100,6 +100,12 @@ export default function AdminDashboard() {
     return true;
   });
 
+  const revenueStats = activeTab === 'bookings' ? {
+    total: filteredData.filter(b => b.status === 'PAID' || b.status === 'VERIFIED').reduce((acc, b) => acc + (b.amount || 0), 0),
+    successCount: filteredData.filter(b => b.status === 'PAID' || b.status === 'VERIFIED').length,
+    pending: filteredData.filter(b => b.status === 'APPLIED').reduce((acc, b) => acc + (b.amount || 0), 0)
+  } : null;
+
   if (isAdmin === null) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
@@ -213,132 +219,187 @@ export default function AdminDashboard() {
               </div>
             </div>
           ) : (
-            <div className="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-2xl shadow-slate-200/40">
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
-                    <thead className="bg-slate-50/50 border-b border-slate-100">
-                    <tr>
-                        {activeTab === 'users' && (
-                        <>
-                            <th className="px-8 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Profile</th>
-                            <th className="px-8 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Role & Auth</th>
-                            <th className="px-8 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Internal Status</th>
-                        </>
-                        )}
-                        {activeTab === 'hostels' && (
-                        <>
-                            <th className="px-8 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Inventory Name</th>
-                            <th className="px-8 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Ownership</th>
-                            <th className="px-8 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Financials</th>
-                            <th className="px-8 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Asset Location</th>
-                        </>
-                        )}
-                        {activeTab === 'bookings' && (
-                        <>
-                            <th className="px-8 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Security ID</th>
-                            <th className="px-8 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Tenant Info</th>
-                            <th className="px-8 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Hostel Unit</th>
-                            <th className="px-8 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Payment Status</th>
-                        </>
-                        )}
-                        <th className="px-8 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] text-right">Operations</th>
-                    </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-50">
-                    {filteredData.map((item) => (
-                        <tr key={item.id} className="hover:bg-blue-50/30 group transition-all">
-                        {activeTab === 'users' && (
-                            <>
-                            <td className="px-8 py-6">
-                                <div className="flex flex-col">
-                                    <span className="font-bold text-slate-950 text-base">{item.name || 'Anonymous'}</span>
-                                    <span className="text-slate-500 text-xs font-medium">{item.email}</span>
-                                </div>
-                            </td>
-                            <td className="px-8 py-6">
-                                <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider ${item.role === 'ADMIN' ? 'bg-red-50 text-red-600 border border-red-100' : item.role === 'OWNER' ? 'bg-indigo-50 text-indigo-600 border border-indigo-100' : 'bg-slate-50 text-slate-600 border border-slate-100'}`}>
-                                {item.role}
-                                </span>
-                            </td>
-                            <td className="px-8 py-6">
-                                {item.isVerified ? (
-                                <div className="flex items-center gap-2 text-emerald-600 text-xs font-black uppercase tracking-tight">
-                                    <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                                    Verified Account
-                                </div>
-                                ) : item.verificationStatus === 'PENDING' ? (
-                                <button 
-                                    onClick={() => { setSelectedUser(item); setShowVerifyModal(true); }}
-                                    className="flex items-center gap-2 text-amber-500 hover:text-amber-600 text-xs font-black uppercase tracking-tight transition-colors group/audit"
-                                >
-                                    <div className="h-2 w-2 rounded-full bg-amber-400 group-hover/audit:bg-amber-600 transition-colors animate-pulse"></div>
-                                    Pending Audit
-                                </button>
-                                ) : (
-                                  <div className="flex items-center gap-2 text-slate-400 text-xs font-black uppercase tracking-tight">
-                                      <div className="h-2 w-2 rounded-full bg-slate-300"></div>
-                                      No Application
-                                  </div>
-                                )}
-                            </td>
-                            </>
-                        )}
-                        {activeTab === 'hostels' && (
-                            <>
-                            <td className="px-8 py-6 font-bold text-slate-950">{item.name}</td>
-                            <td className="px-8 py-6 text-slate-500 text-sm font-semibold">{item.owner?.name || 'Unknown Provider'}</td>
-                            <td className="px-8 py-6">
-                                <span className="font-black text-blue-600 text-base">GH₵ {item.price?.toLocaleString()}</span>
-                            </td>
-                            <td className="px-8 py-6 text-slate-400 text-[10px] font-black uppercase tracking-wider">{item.location}</td>
-                            </>
-                        )}
-                        {activeTab === 'bookings' && (
-                            <>
-                            <td className="px-8 py-6 font-mono text-[10px] font-black text-blue-600 tracking-[0.2em] bg-blue-50/50 rounded-lg">{item.verificationId}</td>
-                            <td className="px-8 py-6 text-slate-950 text-sm font-bold">{item.student?.name}</td>
-                            <td className="px-8 py-6 text-slate-500 text-sm font-semibold">{item.hostel?.name}</td>
-                            <td className="px-8 py-6">
-                                <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider ${item.status === 'PAID' ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-amber-50 text-amber-600 border border-amber-100'}`}>
-                                {item.status}
-                                </span>
-                            </td>
-                            </>
-                        )}
-                        <td className="px-8 py-6 text-right">
-                            <div className="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity translate-x-4 group-hover:translate-x-0">
-                            <button onClick={() => { if (activeTab === 'users') setDetailsUser(item); }} title="View Full Details" className="h-10 w-10 flex items-center justify-center bg-white border border-slate-200 text-slate-600 hover:text-blue-600 hover:border-blue-200 rounded-xl transition-all shadow-sm">
-                                <Edit size={18} />
-                            </button>
-                            <button onClick={() => handleDelete(item.id)} title="Purge Record" className="h-10 w-10 flex items-center justify-center bg-white border border-slate-200 text-slate-400 hover:text-red-600 hover:border-red-200 rounded-xl transition-all shadow-sm">
-                                <Trash2 size={18} />
-                            </button>
-                            </div>
-                        </td>
-                        </tr>
-                    ))}
-                    </tbody>
-                </table>
-              </div>
-              
-              {filteredData.length === 0 && (
-                <div className="py-32 text-center flex flex-col items-center justify-center">
-                    <div className="h-20 w-20 bg-slate-50 rounded-full flex items-center justify-center mb-6">
-                        <Search className="text-slate-300" size={32} />
+            <>
+              {activeTab === 'bookings' && revenueStats && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                  <div className="bg-white p-8 rounded-[2rem] border border-slate-200 shadow-xl shadow-slate-200/20 group hover:border-blue-500 transition-all duration-500">
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className="h-12 w-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 group-hover:scale-110 transition-transform">
+                        <BarChart3 size={24} />
+                      </div>
+                      <span className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Gross Volume</span>
                     </div>
-                  <p className="text-slate-950 font-black uppercase tracking-[0.2em] text-xs mb-2">Null Set Returned</p>
-                  <p className="text-slate-400 font-bold text-xs">No records matching &quot;{searchTerm}&quot; in {activeTab}</p>
+                    <p className="text-3xl font-black text-slate-950 tracking-tighter">GH₵ {revenueStats.total.toLocaleString()}</p>
+                    <p className="text-[10px] text-emerald-600 font-bold mt-2 flex items-center gap-1 uppercase">
+                      <CheckCircle size={12} /> {revenueStats.successCount} Settled Logged
+                    </p>
+                  </div>
+
+                  <div className="bg-white p-8 rounded-[2rem] border border-slate-200 shadow-xl shadow-slate-200/20 group hover:border-amber-500 transition-all duration-500 text-slate-950">
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className="h-12 w-12 bg-amber-50 rounded-2xl flex items-center justify-center text-amber-600 group-hover:rotate-12 transition-transform">
+                        <CreditCard size={24} />
+                      </div>
+                      <span className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Pending Sync</span>
+                    </div>
+                    <p className="text-3xl font-black text-slate-950 tracking-tighter">GH₵ {revenueStats.pending.toLocaleString()}</p>
+                    <p className="text-[10px] text-slate-400 font-bold mt-2 uppercase">Awaiting verification</p>
+                  </div>
+
+                  <div className="bg-white p-8 rounded-[2rem] border border-slate-200 shadow-xl shadow-slate-200/20 group hover:border-red-500 transition-all duration-500">
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className="h-12 w-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-600">
+                        <ShieldCheck size={24} />
+                      </div>
+                      <span className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Sync Health</span>
+                    </div>
+                    <p className="text-3xl font-black text-slate-950 tracking-tighter">100%</p>
+                    <p className="text-[10px] text-slate-400 font-bold mt-2 uppercase">Core Database Healthy</p>
+                  </div>
                 </div>
               )}
-              
-              <div className="bg-slate-50/50 px-8 py-6 border-t border-slate-100 flex items-center justify-between">
-                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Showing {filteredData.length} entries</span>
-                  <div className="flex gap-2">
-                      <button className="h-8 px-4 text-[10px] font-black bg-white border border-slate-200 rounded-lg text-slate-400 cursor-not-allowed">Previous</button>
-                      <button className="h-8 px-4 text-[10px] font-black bg-white border border-slate-200 rounded-lg text-slate-400 cursor-not-allowed">Next</button>
+
+              <div className="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-2xl shadow-slate-200/40">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse">
+                      <thead className="bg-slate-50/50 border-b border-slate-100">
+                      <tr>
+                          {activeTab === 'users' && (
+                          <>
+                              <th className="px-8 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Profile</th>
+                              <th className="px-8 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Role & Auth</th>
+                              <th className="px-8 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Internal Status</th>
+                          </>
+                          )}
+                          {activeTab === 'hostels' && (
+                          <>
+                              <th className="px-8 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Inventory Name</th>
+                              <th className="px-8 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Ownership</th>
+                              <th className="px-8 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Financials</th>
+                              <th className="px-8 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Asset Location</th>
+                          </>
+                          )}
+                          {activeTab === 'bookings' && (
+                          <>
+                              <th className="px-8 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Security ID</th>
+                              <th className="px-8 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Financial Details</th>
+                              <th className="px-8 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Tenant Info</th>
+                              <th className="px-8 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Hostel Unit</th>
+                              <th className="px-8 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Log History</th>
+                              <th className="px-8 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Sync Status</th>
+                          </>
+                          )}
+                          <th className="px-8 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] text-right">Operations</th>
+                      </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-50">
+                      {filteredData.map((item) => (
+                          <tr key={item.id} className="hover:bg-blue-50/30 group transition-all">
+                          {activeTab === 'users' && (
+                              <>
+                              <td className="px-8 py-6">
+                                  <div className="flex flex-col">
+                                      <span className="font-bold text-slate-950 text-base">{item.name || 'Anonymous'}</span>
+                                      <span className="text-slate-500 text-xs font-medium">{item.email}</span>
+                                  </div>
+                              </td>
+                              <td className="px-8 py-6">
+                                  <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider ${item.role === 'ADMIN' ? 'bg-red-50 text-red-600 border border-red-100' : item.role === 'OWNER' ? 'bg-indigo-50 text-indigo-600 border border-indigo-100' : 'bg-slate-50 text-slate-600 border border-slate-100'}`}>
+                                  {item.role}
+                                  </span>
+                              </td>
+                              <td className="px-8 py-6">
+                                  {item.isVerified ? (
+                                  <div className="flex items-center gap-2 text-emerald-600 text-xs font-black uppercase tracking-tight">
+                                      <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                                      Verified Account
+                                  </div>
+                                  ) : item.verificationStatus === 'PENDING' ? (
+                                  <button 
+                                      onClick={() => { setSelectedUser(item); setShowVerifyModal(true); }}
+                                      className="flex items-center gap-2 text-amber-500 hover:text-amber-600 text-xs font-black uppercase tracking-tight transition-colors group/audit"
+                                  >
+                                      <div className="h-2 w-2 rounded-full bg-amber-400 group-hover/audit:bg-amber-600 transition-colors animate-pulse"></div>
+                                      Pending Audit
+                                  </button>
+                                  ) : (
+                                    <div className="flex items-center gap-2 text-slate-400 text-xs font-black uppercase tracking-tight">
+                                        <div className="h-2 w-2 rounded-full bg-slate-300"></div>
+                                        No Application
+                                    </div>
+                                  )}
+                              </td>
+                              </>
+                          )}
+                          {activeTab === 'hostels' && (
+                              <>
+                              <td className="px-8 py-6 font-bold text-slate-950">{item.name}</td>
+                              <td className="px-8 py-6 text-slate-500 text-sm font-semibold">{item.owner?.name || 'Unknown Provider'}</td>
+                              <td className="px-8 py-6">
+                                  <span className="font-black text-blue-600 text-base">GH₵ {item.price?.toLocaleString()}</span>
+                              </td>
+                              <td className="px-8 py-6 text-slate-400 text-[10px] font-black uppercase tracking-wider">{item.location}</td>
+                              </>
+                          )}
+                          {activeTab === 'bookings' && (
+                              <>
+                              <td className="px-8 py-6 font-mono text-[10px] font-black text-blue-600 tracking-[0.2em] bg-blue-50/50 rounded-lg">{item.verificationId}</td>
+                              <td className="px-8 py-6">
+                                  <div className="flex flex-col">
+                                      <span className="font-black text-blue-600 text-base">GH₵ {item.amount?.toLocaleString()}</span>
+                                      <span className="text-slate-400 text-[10px] font-black uppercase tracking-wider">{item.telecom || 'DIRECT'}</span>
+                                  </div>
+                              </td>
+                              <td className="px-8 py-6 text-slate-950 text-sm font-bold">{item.student?.name}</td>
+                              <td className="px-8 py-6 text-slate-500 text-sm font-semibold">{item.hostel?.name}</td>
+                              <td className="px-8 py-6">
+                                  <div className="flex flex-col">
+                                      <span className="text-slate-950 text-xs font-bold">{new Date(item.createdAt).toLocaleDateString()}</span>
+                                      <span className="text-slate-400 text-[9px] font-black uppercase">{new Date(item.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                  </div>
+                              </td>
+                              <td className="px-8 py-6">
+                                  <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider ${item.status === 'PAID' || item.status === 'VERIFIED' ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-amber-50 text-amber-600 border border-amber-100'}`}>
+                                  {item.status}
+                                  </span>
+                              </td>
+                              </>
+                          )}
+                          <td className="px-8 py-6 text-right">
+                              <div className="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity translate-x-4 group-hover:translate-x-0">
+                              <button onClick={() => { if (activeTab === 'users') setDetailsUser(item); }} title="View Full Details" className="h-10 w-10 flex items-center justify-center bg-white border border-slate-200 text-slate-600 hover:text-blue-600 hover:border-blue-200 rounded-xl transition-all shadow-sm">
+                                  <Edit size={18} />
+                              </button>
+                              <button onClick={() => handleDelete(item.id)} title="Purge Record" className="h-10 w-10 flex items-center justify-center bg-white border border-slate-200 text-slate-400 hover:text-red-600 hover:border-red-200 rounded-xl transition-all shadow-sm">
+                                  <Trash2 size={18} />
+                              </button>
+                              </div>
+                          </td>
+                          </tr>
+                      ))}
+                      </tbody>
+                  </table>
+                </div>
+                
+                {filteredData.length === 0 && (
+                  <div className="py-32 text-center flex flex-col items-center justify-center">
+                      <div className="h-20 w-20 bg-slate-50 rounded-full flex items-center justify-center mb-6">
+                          <Search className="text-slate-300" size={32} />
+                      </div>
+                    <p className="text-slate-950 font-black uppercase tracking-[0.2em] text-xs mb-2">Null Set Returned</p>
+                    <p className="text-slate-400 font-bold text-xs">No records matching &quot;{searchTerm}&quot; in {activeTab}</p>
                   </div>
+                )}
+                
+                <div className="bg-slate-50/50 px-8 py-6 border-t border-slate-100 flex items-center justify-between">
+                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Showing {filteredData.length} entries</span>
+                    <div className="flex gap-2">
+                        <button className="h-8 px-4 text-[10px] font-black bg-white border border-slate-200 rounded-lg text-slate-400 cursor-not-allowed">Previous</button>
+                        <button className="h-8 px-4 text-[10px] font-black bg-white border border-slate-200 rounded-lg text-slate-400 cursor-not-allowed">Next</button>
+                    </div>
+                </div>
               </div>
-            </div>
+            </>
           )}
         </div>
       </main>
