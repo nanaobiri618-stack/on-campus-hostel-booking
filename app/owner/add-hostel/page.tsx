@@ -43,6 +43,7 @@ export default function AddHostelPage() {
     price: "",
     rooms: "",
     description: "",
+    gender: "MIXED",
     images: [] as string[]
   });
 
@@ -210,6 +211,20 @@ export default function AddHostelPage() {
               <input type="number" placeholder="12" required 
                 onChange={(e) => setFormData({...formData, rooms: e.target.value})} />
             </div>
+          </div>
+
+          <div>
+            <label className="text-xs font-bold uppercase text-slate-400 ml-2">Hostel Category</label>
+            <select 
+              required 
+              value={formData.gender}
+              onChange={(e) => setFormData({...formData, gender: e.target.value})}
+              className="w-full p-4 rounded-xl border-2 border-slate-200 focus:border-blue-500 transition-colors bg-white mt-1"
+            >
+              <option value="MIXED">Mixed (Male & Female)</option>
+              <option value="MALE">Male Only</option>
+              <option value="FEMALE">Female Only</option>
+            </select>
           </div>
 
           <div className="space-y-4">

@@ -59,6 +59,7 @@ model Hostel {
   location     String
   price        Float
   images       String?     @db.LongText
+  gender       String      @default("MIXED") // MIXED, MALE, FEMALE
   createdAt    DateTime    @default(now())
   owner        User        @relation(fields: [ownerId], references: [id])
   ownerId      Int

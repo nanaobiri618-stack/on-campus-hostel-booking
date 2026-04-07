@@ -90,6 +90,7 @@ export async function POST(request: Request) {
         price: parseFloat(body.price),
         ownerId: payload.userId, 
         universityId: universityId,
+        gender: body.gender || "MIXED",
         images: Array.isArray(body.images) 
           ? body.images.filter((url: string) => url.trim() !== "").join('|DELIM|') 
           : body.images,

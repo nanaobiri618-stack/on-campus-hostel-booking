@@ -147,6 +147,16 @@ export default function HostelsPage() {
                   </div>
                 </div>
 
+                <div className="mb-4 flex flex-wrap gap-2">
+                  <span className={`text-[10px] font-black uppercase px-2 py-1 rounded-md ${
+                    hostel.gender === 'MALE' ? 'bg-blue-100 text-blue-700' : 
+                    hostel.gender === 'FEMALE' ? 'bg-pink-100 text-pink-700' : 
+                    'bg-slate-100 text-slate-700'
+                  }`}>
+                    {hostel.gender === 'MALE' ? 'Male Only' : hostel.gender === 'FEMALE' ? 'Female Only' : 'Mixed Gender'}
+                  </span>
+                </div>
+
                 <h3 className="text-xl font-black text-slate-900 mb-2">{hostel.name}</h3>
                 <p className="text-slate-500 text-sm mb-6 font-medium leading-relaxed truncate">
                   {hostel.description}

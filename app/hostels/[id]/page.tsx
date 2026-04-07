@@ -122,9 +122,18 @@ export default function HostelDetailsPage() {
             <div className="bg-white p-8 rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-slate-100">
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <p className="text-sm font-bold text-blue-600 flex items-center gap-1 mb-1">
-                    <MapPin size={14} /> {hostel.university?.name || hostel.location}
-                  </p>
+                  <div className="flex items-center gap-2 mb-2">
+                    <p className="text-sm font-bold text-blue-600 flex items-center gap-1">
+                      <MapPin size={14} /> {hostel.university?.name || hostel.location}
+                    </p>
+                    <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-md ${
+                      hostel.gender === 'MALE' ? 'bg-blue-100 text-blue-700' : 
+                      hostel.gender === 'FEMALE' ? 'bg-pink-100 text-pink-700' : 
+                      'bg-slate-100 text-slate-700'
+                    }`}>
+                      {hostel.gender === 'MALE' ? 'Male Only' : hostel.gender === 'FEMALE' ? 'Female Only' : 'Mixed Gender'}
+                    </span>
+                  </div>
                   <h2 className="text-3xl font-black text-slate-900">{hostel.name}</h2>
                 </div>
                 <div className="text-right">
