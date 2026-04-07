@@ -117,7 +117,16 @@ export default function HostelDetailsPage() {
       <main className="max-w-6xl mx-auto px-4 mt-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
           <div className="lg:col-span-2 space-y-8">
-            <ImageSlider images={hostel.images?.includes('|DELIM|') ? hostel.images.split('|DELIM|') : (hostel.images?.split(',').filter((s: string) => !s.startsWith('data:')) || [])} name={hostel.name} />
+            <ImageSlider 
+              images={(() => {
+                if (!hostel.images) return [];
+                if (hostel.images.includes('|DELIM|')) return hostel.images.split('|DELIM|');
+                if (hostel.images.startsWith('data:')) return [hostel.images]; // Single Base64
+                if (hostel.images.includes(',')) return hostel.images.split(',');
+                return [hostel.images];
+              })()} 
+              name={hostel.name} 
+            />
 
             <div className="bg-white p-8 rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-slate-100">
               <div className="flex items-center justify-between mb-6">
