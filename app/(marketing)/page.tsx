@@ -131,7 +131,7 @@ export default function LandingPage() {
           <div className="absolute -inset-4 bg-gradient-to-tr from-blue-500 to-indigo-600 rounded-[2rem] opacity-20 blur-xl group-hover:opacity-30 transition duration-1000"></div>
           <div className="relative bg-white p-6 rounded-[2rem] border-2 border-slate-100 shadow-2xl">
             <img 
-              src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://oncampusgh.onrender.com" 
+              src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://oncampusgh.com" 
               alt="QR Code to visit On Campus Ghana"
               className="w-40 h-40 md:w-48 md:h-48"
             />

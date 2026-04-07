@@ -4,10 +4,9 @@ import Link from "next/link";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  // Add this line to fix the warning
-  metadataBase: new URL("http://localhost:3000"), 
-  title: "Your App Name",
-  description: "Your App Description",
+  metadataBase: new URL("https://oncampusgh.com"), 
+  title: "On Campus Ghana",
+  description: "Find Your Perfect Hostel—Fast & Stress‑Free. Search verified hostels by campus, budget, and preferences.",
 };
 
 import { Navbar } from "./components/Navbar";
