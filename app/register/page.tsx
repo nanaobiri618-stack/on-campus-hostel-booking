@@ -68,7 +68,7 @@ export default function RegisterPage() {
     <main className="min-h-screen flex items-center justify-center bg-slate-50 px-4 py-12">
       <div className="max-w-md w-full bg-white p-8 rounded-xl shadow-lg border border-slate-200">
         <h1 className="text-2xl font-bold text-slate-900 text-center mb-6">Create Account</h1>
-        
+
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-2 rounded-md text-sm mb-4 text-center">
             {error}
@@ -82,7 +82,7 @@ export default function RegisterPage() {
               <input
                 type="text"
                 required
-                placeholder="John Doe"
+                placeholder="Enter your full name"
                 className="w-full px-3 py-2 border rounded-md outline-none focus:ring-2 focus:ring-blue-500"
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               />
@@ -92,7 +92,7 @@ export default function RegisterPage() {
               <input
                 type="email"
                 required
-                placeholder="name@example.com"
+                placeholder="name@mail.com"
                 className="w-full px-3 py-2 border rounded-md outline-none focus:ring-2 focus:ring-blue-500"
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               />
@@ -124,7 +124,7 @@ export default function RegisterPage() {
 
           <div className="pt-4 border-t space-y-4">
             <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Verification Info</p>
-            
+
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">
                 {formData.role === 'OWNER' ? 'Owner / Unique ID' : 'School Unique Number'}
@@ -182,8 +182,8 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             disabled={loading}
             className={`w-full bg-blue-600 text-white py-3 rounded-md font-bold transition ${loading ? 'opacity-50' : 'hover:bg-blue-700 active:scale-[0.98]'}`}
           >
@@ -208,10 +208,10 @@ export default function RegisterPage() {
                     <h4 className="font-bold text-slate-900 truncate">{h.name}</h4>
                     <p className="text-[10px] text-slate-500 flex items-center gap-1 mt-0.5"><MapPin size={10} /> {h.location}</p>
                     <div className="flex items-center justify-between mt-2">
-                       <span className="text-sm font-black text-blue-600">GH₵ {h.price}</span>
-                       <Link href={`/hostels/${h.id}`} className="text-[10px] font-bold text-slate-400 group-hover:text-blue-600 flex items-center gap-0.5">
-                         View <ArrowRight size={10} />
-                       </Link>
+                      <span className="text-sm font-black text-blue-600">GH₵ {h.price}</span>
+                      <Link href={`/hostels/${h.id}`} className="text-[10px] font-bold text-slate-400 group-hover:text-blue-600 flex items-center gap-0.5">
+                        View <ArrowRight size={10} />
+                      </Link>
                     </div>
                   </div>
                 </div>
