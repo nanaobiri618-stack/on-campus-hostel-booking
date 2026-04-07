@@ -117,19 +117,7 @@ export default function HostelDetailsPage() {
       <main className="max-w-6xl mx-auto px-4 mt-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
           <div className="lg:col-span-2 space-y-8">
-            <div className="aspect-video bg-slate-200 rounded-[2.5rem] overflow-hidden shadow-2xl relative">
-              <img 
-                src={(hostel.images?.split(',').map((s: string) => s.trim()).filter(Boolean)[0]) || "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=1200&q=80"} 
-                alt={hostel.name} 
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=1200&q=80";
-                }}
-              />
-              <div className="absolute top-6 left-6 bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-xl flex items-center gap-2 shadow-xl shadow-blue-500/40">
-                <ShieldCheck size={14} /> Verified Property
-              </div>
-            </div>
+            <ImageSlider images={hostel.images?.split(',').map((s: string) => s.trim()).filter(Boolean) || []} name={hostel.name} />
 
             <div className="bg-white p-8 rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-slate-100">
               <div className="flex items-center justify-between mb-6">
@@ -353,6 +341,51 @@ export default function HostelDetailsPage() {
               </div>
             </div>
           </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ImageSlider({ images, name }: { images: string[], name: string }) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const displayImages = images.length > 0 ? images : ["https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=1200&q=80"];
+
+  useEffect(() => {
+    if (displayImages.length <= 1) return;
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % displayImages.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [displayImages]);
+
+  return (
+    <div className="aspect-video bg-slate-200 rounded-[2.5rem] overflow-hidden shadow-2xl relative group">
+      {displayImages.map((src, idx) => (
+        <img 
+          key={idx}
+          src={src} 
+          alt={`${name} - ${idx}`} 
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${idx === currentIndex ? 'opacity-100' : 'opacity-0'}`}
+          onError={(e) => {
+            (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=1200&q=80";
+          }}
+        />
+      ))}
+      
+      <div className="absolute top-6 left-6 z-10 bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-xl flex items-center gap-2 shadow-xl shadow-blue-500/40">
+        <ShieldCheck size={14} /> Verified Property
+      </div>
+
+      {displayImages.length > 1 && (
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+          {displayImages.map((_, idx) => (
+            <button 
+              key={idx}
+              onClick={() => setCurrentIndex(idx)}
+              className={`h-1.5 rounded-full transition-all ${idx === currentIndex ? 'w-8 bg-white' : 'w-2 bg-white/40 hover:bg-white/60'}`}
+            />
+          ))}
         </div>
       )}
     </div>

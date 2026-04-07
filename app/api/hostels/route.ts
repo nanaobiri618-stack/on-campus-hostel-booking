@@ -54,16 +54,29 @@ export async function GET() {
 // --- 2. POST: Create a new hostel ---
 export async function POST(request: Request) {
   try {
-    const cookie = request.headers.get('cookie');
-    const token = cookie?.split('auth_token=')[1]?.split(';')[0];
+    // 1. Check Auth First (before reading potentially massive body)
+    const cookie = request.headers.get('cookie') || "";
+    const tokenMatch = cookie.match(/auth_token=([^;]+)/);
+    const token = tokenMatch ? tokenMatch[1] : null;
     const payload = token ? (verifyJwt(token) as any) : null;
 
     if (!payload || payload.role !== 'OWNER') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+      console.warn('[API/Hostels] Unauthorized attempt or invalid token');
+      return NextResponse.json({ error: 'Unauthorized. Please log in as an owner.' }, { status: 403 });
     }
 
-    const body = await request.json();
-    console.log('Creating hostel with body:', body);
+    // 2. Read JSON body with error handling
+    let body;
+    try {
+      body = await request.json();
+    } catch (parseError) {
+      console.error('[API/Hostels] Body parsing failed:', parseError);
+      return NextResponse.json({ 
+        error: 'Failed to read data. The images might be too large for the server. Try uploading fewer images.' 
+      }, { status: 413 });
+    }
+
+    console.log('[API/Hostels] POST request received from user:', payload.userId);
 
     // Safeguard universityId
     const rawUniId = parseInt(body.universityId);
@@ -94,11 +107,11 @@ export async function POST(request: Request) {
     });
     
     return NextResponse.json(newHostel, { status: 201 });
-  } catch (error) {
-    console.error('Create Error:', error);
+  } catch (error: any) {
+    console.error('[API/Hostels] Create Error:', error);
     return NextResponse.json(
-      { error: "Could not create hostel. Ensure all fields are valid." }, 
+      { error: "Could not create hostel. " + (error.message || "Ensure all fields are valid.") }, 
       { status: 500 }
     );
   }
-}
+}

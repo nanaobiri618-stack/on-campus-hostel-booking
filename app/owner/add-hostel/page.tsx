@@ -43,57 +43,46 @@ export default function AddHostelPage() {
     price: "",
     rooms: "",
     description: "",
-    images: [""]
+    images: [] as string[]
   });
 
   const [universities, setUniversities] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ type: "", text: "" });
 
-  const addImageInput = () => {
-    setFormData({ ...formData, images: [...formData.images, ""] });
-  };
-
-  const updateImage = (index: number, value: string) => {
-    const newImages = [...formData.images];
-    newImages[index] = value;
-    setFormData({ ...formData, images: newImages });
+  const removeImage = (index: number) => {
+    setFormData({ ...formData, images: formData.images.filter((_, i) => i !== index) });
   };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
 
     setLoading(true);
     setMessage({ type: "", text: "" });
 
     try {
-      // Limit to 2MB for Base64 storage
-      if (file.size > 2 * 1024 * 1024) {
-        throw new Error('Image too large. Please upload an image smaller than 2MB.');
+      const newImages = [...formData.images];
+      
+      for (const file of files) {
+        if (file.size > 2 * 1024 * 1024) {
+          throw new Error(`Image ${file.name} is too large (>2MB).`);
+        }
+
+        const base64String = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result as string);
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+
+        newImages.push(base64String);
       }
 
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64String = reader.result as string;
-        
-        // Add the uploaded url to the images array replacing the first empty string if any, else append
-        const newImages = [...formData.images];
-        const emptyIndex = newImages.findIndex(url => url === "");
-        if (emptyIndex !== -1) {
-          newImages[emptyIndex] = base64String;
-        } else {
-          newImages.push(base64String);
-        }
-        setFormData({ ...formData, images: newImages });
-        setLoading(false);
-      };
-      reader.onerror = () => {
-        throw new Error('Failed to read file');
-      };
-      reader.readAsDataURL(file);
+      setFormData({ ...formData, images: newImages });
+      setLoading(false);
     } catch (err: any) {
-      setMessage({ type: "error", text: err.message || "Failed to process image. Please try again." });
+      setMessage({ type: "error", text: err.message || "Failed to process images." });
       setLoading(false);
     }
   };
@@ -118,6 +107,17 @@ export default function AddHostelPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Client-side payload size check
+    const payloadSize = new Blob([JSON.stringify(formData)]).size;
+    if (payloadSize > 5 * 1024 * 1024) { // 5MB limit
+      setMessage({ 
+        type: "error", 
+        text: "Total data size is too large (approx. " + (payloadSize / (1024 * 1024)).toFixed(1) + "MB). Please remove some images or use smaller files." 
+      });
+      return;
+    }
+
     setLoading(true);
     setMessage({ type: "", text: "" });
 
@@ -134,11 +134,18 @@ export default function AddHostelPage() {
           window.location.href = "/owner/dashboard";
         }, 2000);
       } else {
-        const data = await res.json();
-        setMessage({ type: "error", text: data.error || "Failed to list hostel." });
+        // Handle non-JSON responses (like 413 Payload Too Large)
+        const contentType = res.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          const data = await res.json();
+          setMessage({ type: "error", text: data.error || "Failed to list hostel." });
+        } else {
+          setMessage({ type: "error", text: `Server error (${res.status}): The data might be too large for the server.` });
+        }
       }
     } catch (err) {
-      setMessage({ type: "error", text: "Something went wrong. Please try again." });
+      console.error("Submission error:", err);
+      setMessage({ type: "error", text: "Connection error. This can happen if the images are too large for your internet connection or the server." });
     } finally {
       setLoading(false);
     }
@@ -206,34 +213,28 @@ export default function AddHostelPage() {
           </div>
 
           <div className="space-y-4">
-            <label className="text-xs font-bold uppercase text-slate-400 ml-2 block">Hostel Gallery (Image URLs)</label>
-            {formData.images.map((url, index) => (
-              <div key={index} className="flex gap-2">
-                <input 
-                  type="text" 
-                  placeholder={`Image URL #${index + 1}`} 
-                  value={url}
-                  onChange={(e) => updateImage(index, e.target.value)}
-                  className="flex-1"
-                />
-              </div>
-            ))}
-            <button 
-              type="button" 
-              onClick={addImageInput}
-              className="text-sm font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1"
-            >
-              + Add More Images
-            </button>
+            <label className="text-xs font-bold uppercase text-slate-400 ml-2 block">Hostel Gallery (Click image to remove)</label>
             
-            <div className="border-2 border-dashed border-slate-200 rounded-2xl p-6 text-center hover:border-blue-300 transition-colors">
-              <input type="file" className="hidden" id="thumbnail-upload" accept="image/*" onChange={handleFileUpload} />
-              <label htmlFor="thumbnail-upload" className="cursor-pointer">
-                <Upload className="mx-auto mb-2 text-slate-300" size={32} />
-                <p className="text-sm font-bold text-slate-500">Upload Thumbnail</p>
-                <p className="text-[10px] text-slate-400 uppercase tracking-widest mt-1">PNG, JPG up to 5MB</p>
-              </label>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+              {formData.images.map((url, index) => (
+                <div key={index} className="relative group aspect-video rounded-xl overflow-hidden bg-slate-100 border cursor-pointer" onClick={() => removeImage(index)}>
+                  <img src={url} alt={`Gallery ${index}`} className="w-full h-full object-cover group-hover:opacity-50 transition-opacity" />
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <span className="bg-red-500 text-white text-[10px] font-black px-2 py-1 rounded-full uppercase">Delete</span>
+                  </div>
+                </div>
+              ))}
+              
+              <div className="border-2 border-dashed border-slate-200 rounded-xl flex flex-col items-center justify-center p-4 hover:border-blue-300 transition-colors bg-white">
+                <input type="file" className="hidden" id="gallery-upload" accept="image/*" multiple onChange={handleFileUpload} />
+                <label htmlFor="gallery-upload" className="cursor-pointer flex flex-col items-center">
+                  <Upload className="text-slate-300 mb-1" size={24} />
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Add Images</p>
+                </label>
+              </div>
             </div>
+
+            <p className="text-[10px] text-slate-400 font-medium">Tip: You can select multiple images at once. Images are stored in base64 format.</p>
           </div>
 
           <button type="submit" disabled={loading} className="btn-primary w-full py-4 text-lg disabled:opacity-50">
