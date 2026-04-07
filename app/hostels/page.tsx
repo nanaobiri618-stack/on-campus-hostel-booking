@@ -120,7 +120,7 @@ export default function HostelsPage() {
             <div key={hostel.id} className="bg-white rounded-3xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all group">
               <div className="relative h-64">
                 <img 
-                  src={(hostel.images?.split(',').map((s: string) => s.trim()).filter(Boolean)[0]) || "/hostels/luxury_hostel.png"} 
+                  src={(hostel.images?.includes('|DELIM|') ? hostel.images.split('|DELIM|')[0] : (hostel.images?.split(',').filter((s: string) => !s.startsWith('data:'))[0])) || "/hostels/luxury_hostel.png"} 
                   alt={hostel.name} 
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   onError={(e) => {

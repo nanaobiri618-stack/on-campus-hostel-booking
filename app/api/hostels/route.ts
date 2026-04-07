@@ -91,7 +91,7 @@ export async function POST(request: Request) {
         ownerId: payload.userId, 
         universityId: universityId,
         images: Array.isArray(body.images) 
-          ? body.images.filter((url: string) => url.trim() !== "").join(',') 
+          ? body.images.filter((url: string) => url.trim() !== "").join('|DELIM|') 
           : body.images,
       },
     });

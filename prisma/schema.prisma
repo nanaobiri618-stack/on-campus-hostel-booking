@@ -55,7 +55,7 @@ model OwnerVerification {
 model Hostel {
   id           Int         @id @default(autoincrement())
   name         String
-  description  String?
+  description  String?     @db.LongText
   location     String
   price        Float
   images       String?     @db.LongText
