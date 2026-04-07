@@ -1,12 +1,13 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { MapPin, Star, ShieldCheck, CreditCard, ArrowLeft, Loader2, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 
 export default function HostelDetailsPage() {
   const { id } = useParams();
+  const router = useRouter();
   const [hostel, setHostel] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   
@@ -76,6 +77,11 @@ export default function HostelDetailsPage() {
 
       setVerificationId(vid);
       setPaymentStep(5); // Success!
+
+      // Redirect to verification pending after a short delay to show success
+      setTimeout(() => {
+        router.push('/pending-verification');
+      }, 3000);
     } catch (err) {
       console.error("Booking failed:", err);
       alert("Payment processed but failed to save booking. Please contact support with code: " + vid);

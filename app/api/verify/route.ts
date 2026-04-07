@@ -14,7 +14,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
-    const { id } = await request.json();
+    const { id, roomNumber } = await request.json();
 
     if (!id) {
       return NextResponse.json({ error: 'Student ID is required' }, { status: 400 });
@@ -27,7 +27,21 @@ export async function POST(request: Request) {
     });
     const hostelIds = ownerHostels.map(h => h.id);
 
-    const booking = await (prisma as any).booking.updateMany({
+    // Find the first booking to get the hostel name for the user record
+    const firstBooking = await (prisma as any).booking.findFirst({
+      where: {
+        studentId: id,
+        hostelId: { in: hostelIds },
+        status: { in: ['PAID', 'APPLIED'] }
+      },
+      include: { hostel: true }
+    });
+
+    if (!firstBooking) {
+      return NextResponse.json({ error: 'No pending booking found for this student' }, { status: 404 });
+    }
+
+    await (prisma as any).booking.updateMany({
       where: {
         studentId: id,
         hostelId: { in: hostelIds },
@@ -36,14 +50,14 @@ export async function POST(request: Request) {
       data: { status: 'VERIFIED' }
     });
 
-    if (booking.count === 0) {
-      return NextResponse.json({ error: 'No pending booking found for this student' }, { status: 404 });
-    }
-
-    // Also update the user's verified status for general access
+    // Also update the user's verified status and assign room/hostel
     await prisma.user.update({
       where: { id },
-      data: { isVerified: true }
+      data: { 
+        isVerified: true,
+        roomNumber: roomNumber || undefined,
+        hostelName: firstBooking.hostel.name
+      }
     });
 
     return NextResponse.json({ message: 'Payment verified successfully' });

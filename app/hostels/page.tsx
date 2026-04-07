@@ -74,14 +74,6 @@ export default function HostelsPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 pb-20">
-      {/* Verification Warning Banner */}
-      {user && user.role === 'TENANT' && !user.isVerified && (
-        <div className="bg-amber-500 text-white px-4 py-3 text-center text-sm font-bold flex items-center justify-center gap-2 animate-slide-down sticky top-0 z-50 shadow-lg">
-          <ShieldAlert size={18} />
-          Verification Pending: You can browse hostels, but booking features are restricted until your hostel owner verifies your details.
-        </div>
-      )}
-
       {/* Header / Hero Section */}
       <section className="bg-blue-600 pt-32 pb-20 px-4 text-center text-white">
         <h1 className="text-4xl md:text-5xl font-black tracking-tight mb-4">Find Your Next Home</h1>

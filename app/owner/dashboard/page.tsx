@@ -51,12 +51,15 @@ export default function OwnerDashboard() {
   }, []);
 
   const handleVerify = async (id: number) => {
+    const roomNumber = window.prompt("Enter Room Number to assign to this student (e.g., Room 204):");
+    if (roomNumber === null) return; // Cancelled
+
     setVerifying(id);
     try {
       const res = await fetch('/api/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id }),
+        body: JSON.stringify({ id, roomNumber }),
       });
       if (res.ok) {
         fetchData();

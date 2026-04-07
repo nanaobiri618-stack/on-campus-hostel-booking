@@ -1,10 +1,59 @@
 "use client";
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Clock, ShieldAlert, LogOut, MessageSquare } from 'lucide-react';
+import { Clock, ShieldAlert, LogOut, MessageSquare, CheckCircle2 } from 'lucide-react';
 
 export default function PendingVerificationPage() {
+  const [user, setUser] = useState<any>(null);
+  const [statusChecked, setStatusChecked] = useState(false);
+
+  const checkStatus = async () => {
+    try {
+      const res = await fetch('/api/auth/session');
+      const data = await res.json();
+      if (data.user) {
+        setUser(data.user);
+        setStatusChecked(true);
+      }
+    } catch (err) {
+      console.error("Failed to check status");
+    }
+  };
+
+  useEffect(() => {
+    checkStatus();
+  }, []);
+
+  if (statusChecked && user?.isVerified) {
+    return (
+      <main className="min-h-screen flex items-center justify-center bg-slate-50 px-4">
+        <div className="max-w-md w-full bg-white p-8 rounded-3xl shadow-xl border border-slate-100 text-center animate-scale-in">
+          <div className="h-20 w-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6 text-green-500">
+            <CheckCircle2 size={40} />
+          </div>
+          
+          <h1 className="text-2xl font-black text-slate-900 mb-2">Verified!</h1>
+          <p className="text-slate-500 font-medium mb-8">
+            Your booking has been approved by the hostel owner. Welcome home!
+          </p>
+
+          <div className="bg-slate-900 text-white p-8 rounded-3xl mb-8 relative overflow-hidden group">
+            <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-2">Your Assigned Room</p>
+            <p className="text-4xl font-mono font-black tracking-tight">{user.roomNumber || "Processing..."}</p>
+          </div>
+
+          <Link 
+            href="/hostels"
+            className="w-full inline-block bg-blue-600 text-white py-4 rounded-2xl font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-200"
+          >
+            Start Discovering
+          </Link>
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main className="min-h-screen flex items-center justify-center bg-slate-50 px-4">
       <div className="max-w-md w-full bg-white p-8 rounded-3xl shadow-xl border border-slate-100 text-center">
@@ -14,7 +63,7 @@ export default function PendingVerificationPage() {
         
         <h1 className="text-2xl font-black text-slate-900 mb-2">Verification Pending</h1>
         <p className="text-slate-500 font-medium mb-8">
-          Thanks for signing up! Your account is currently under review by the hostel administration. 
+          Your booking is currently under review by the hostel owner. 
           This process usually takes less than 24 hours.
         </p>
 
@@ -26,7 +75,7 @@ export default function PendingVerificationPage() {
             <div>
               <p className="text-sm font-bold text-slate-900">What happens next?</p>
               <p className="text-xs text-slate-500 mt-1 leading-relaxed">
-                Once an administrator verifies your details, you will automatically gain access to all hostels and booking features.
+                Once the owner verifies your payment and details, they will assign you a room number which will appear here.
               </p>
             </div>
           </div>
@@ -34,19 +83,7 @@ export default function PendingVerificationPage() {
 
         <div className="space-y-3">
           <button 
-            onClick={async () => {
-              try {
-                const res = await fetch('/api/auth/session');
-                const data = await res.json();
-                if (data.user && !!data.user.isVerified) {
-                  window.location.href = '/hostels';
-                } else {
-                  alert("Your account is still pending verification.");
-                }
-              } catch (err) {
-                alert("Failed to check status. Please try again.");
-              }
-            }}
+            onClick={checkStatus}
             className="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-200"
           >
             Check Status Again
@@ -70,3 +107,5 @@ export default function PendingVerificationPage() {
     </main>
   );
 }
+
+// Done
