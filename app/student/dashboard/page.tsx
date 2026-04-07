@@ -63,12 +63,22 @@ export default function StudentDashboard() {
 
   return (
     <div className="min-h-screen bg-slate-50 pb-20">
-      {/* Top Banner */}
-      <div className="bg-blue-600 h-48 w-full relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
-        <div className="max-w-6xl mx-auto px-4 pt-12 text-white relative z-10">
-          <h1 className="text-3xl font-black tracking-tight uppercase">Student Console</h1>
-          <p className="text-blue-100 font-medium">Manage your profile and track your hostel bookings.</p>
+      {/* Top Banner with Mesh Gradient and Animation */}
+      <div className="bg-blue-600 h-64 w-full relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-indigo-600 to-violet-700 animate-gradient-xy"></div>
+        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
+        <div className="absolute -bottom-24 -right-24 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
+        <div className="absolute -top-24 -left-24 w-64 h-64 bg-blue-400/20 rounded-full blur-3xl"></div>
+        
+        <div className="max-w-6xl mx-auto px-6 pt-16 text-white relative z-10">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-100">Live Resident System</p>
+          </div>
+          <h1 className="text-4xl md:text-5xl font-black tracking-tighter uppercase leading-none">
+            Student <span className="text-blue-200">Terminal</span>
+          </h1>
+          <p className="text-blue-100/80 font-medium mt-2 max-w-md">Securely manage your hostel residency and profile.</p>
         </div>
       </div>
 
@@ -77,39 +87,46 @@ export default function StudentDashboard() {
           
           {/* Left Column: Profile Card */}
           <div className="lg:col-span-1 space-y-6">
-            <div className="bg-white rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-slate-100 p-8">
-              <div className="relative w-24 h-24 mx-auto mb-6">
-                <div className="w-full h-full bg-gradient-to-br from-blue-500 to-indigo-600 rounded-3xl flex items-center justify-center text-white text-3xl font-black shadow-lg">
+            <div className="bg-white rounded-[2.5rem] shadow-2xl shadow-slate-200/60 border border-white p-8 relative overflow-hidden group">
+              {/* Subtle background element */}
+              <div className="absolute -right-10 -bottom-10 w-32 h-32 bg-slate-50 rounded-full group-hover:scale-150 transition-transform duration-700"></div>
+
+              <div className="relative w-28 h-28 mx-auto mb-8">
+                <div className="w-full h-full bg-gradient-to-tr from-slate-900 to-slate-800 rounded-[2rem] flex items-center justify-center text-white text-4xl font-black shadow-2xl rotate-3 group-hover:rotate-0 transition-transform duration-500">
                   {profile?.name?.charAt(0) || profile?.email?.charAt(0).toUpperCase()}
                 </div>
                 {profile?.isVerified && (
-                  <div className="absolute -bottom-2 -right-2 bg-emerald-500 text-white p-1.5 rounded-xl border-4 border-white shadow-lg">
-                    <ShieldCheck size={16} />
+                  <div className="absolute -bottom-1 -right-1 bg-emerald-500 text-white p-2 rounded-2xl border-4 border-white shadow-xl animate-bounce-subtle">
+                    <ShieldCheck size={20} />
                   </div>
                 )}
               </div>
 
-              <h2 className="text-xl font-black text-slate-900 text-center uppercase tracking-tight mb-1">
+              <h2 className="text-2xl font-black text-slate-900 text-center uppercase tracking-tighter mb-1">
                 {profile?.name || "Student Name"}
               </h2>
-              <p className="text-slate-400 text-xs font-bold text-center uppercase tracking-widest mb-6">
-                {profile?.role === 'TENANT' ? 'Student Resident' : profile?.role}
-              </p>
+              <div className="flex justify-center mb-8">
+                <p className="text-blue-600 text-[10px] font-black py-1 px-3 bg-blue-50 rounded-full uppercase tracking-widest">
+                  {profile?.role === 'TENANT' ? 'Verified Resident' : profile?.role}
+                </p>
+              </div>
 
-              <div className="space-y-4 pt-6 border-t border-slate-50">
-                <ProfileItem icon={<Mail size={16} />} label="Email" value={profile?.email} />
-                <ProfileItem icon={<Phone size={16} />} label="Phone" value={profile?.phone || "Not Set"} />
-                <ProfileItem icon={<User size={16} />} label="Student ID" value={profile?.uniqueNumber || "Not Set"} />
-                <ProfileItem icon={<School size={16} />} label="University" value={profile?.schoolName || "Not Set"} />
+              <div className="space-y-5 pt-8 border-t border-slate-100 relative z-10">
+                <ProfileItem icon={<Mail size={16} />} label="Email Address" value={profile?.email} />
+                <ProfileItem icon={<Phone size={16} />} label="Contact Number" value={profile?.phone || "Not Set"} />
+                <ProfileItem icon={<User size={16} />} label="Registration ID" value={profile?.uniqueNumber || "Not Set"} />
+                <ProfileItem icon={<School size={16} />} label="Institution" value={profile?.schoolName || "Not Set"} />
               </div>
 
               {!profile?.isVerified && (
-                <div className="mt-8 p-4 bg-amber-50 border border-amber-100 rounded-2xl flex items-start gap-3">
-                  <AlertCircle className="text-amber-500 shrink-0 mt-0.5" size={18} />
+                <div className="mt-10 p-5 bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-100/50 rounded-[2rem] flex items-start gap-4">
+                  <div className="p-2 bg-amber-500/10 text-amber-600 rounded-xl">
+                    <AlertCircle size={20} />
+                  </div>
                   <div>
-                    <p className="text-xs font-black text-amber-700 uppercase mb-1">Verification Required</p>
-                    <p className="text-[10px] text-amber-600 font-medium leading-relaxed">
-                      Complete a booking to start the verification process with your hostel owner.
+                    <p className="text-xs font-black text-amber-800 uppercase mb-1">Action Required</p>
+                    <p className="text-[10px] text-amber-700/80 font-semibold leading-relaxed">
+                      Your identity is not yet verified. Please ensure your booking status is "VERIFIED" to unlock all console features.
                     </p>
                   </div>
                 </div>

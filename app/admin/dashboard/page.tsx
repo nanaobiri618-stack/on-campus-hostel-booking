@@ -126,39 +126,39 @@ export default function AdminDashboard() {
     <div className="flex min-h-screen bg-[#fcfdff]">
       {/* Admin Sidebar */}
       <aside className="bg-slate-950 text-white w-72 hidden lg:flex flex-col p-8 sticky top-0 h-screen shadow-2xl z-20">
-        <div className="flex items-center gap-4 mb-12 px-2">
-          <div className="h-12 w-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-xl shadow-blue-500/20 group hover:rotate-6 transition-transform">
+        <div className="flex items-center gap-4 mb-14 px-2 group cursor-pointer">
+          <div className="h-12 w-12 bg-gradient-to-br from-red-500 to-red-700 rounded-2xl flex items-center justify-center shadow-xl shadow-red-500/20 group-hover:rotate-6 transition-transform duration-300">
             <ShieldAlert size={24} className="text-white" />
           </div>
           <div>
-            <span className="text-xl font-black tracking-tight block">Admin Hub</span>
-            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">System Control</span>
+            <span className="text-xl font-black tracking-tight block leading-none">System <span className="text-red-500 text-xs">Core</span></span>
+            <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest mt-1">Admin Operations</span>
           </div>
         </div>
 
         <nav className="flex-1 space-y-3">
           <button 
             onClick={() => setActiveTab('users')} 
-            className={`w-full flex items-center gap-4 px-5 py-4 rounded-2xl transition-all font-bold text-sm group ${activeTab === 'users' ? 'bg-blue-600 text-white shadow-xl shadow-blue-500/30' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
+            className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl transition-all font-black text-sm group ${activeTab === 'users' ? 'bg-blue-600 text-white shadow-xl shadow-blue-500/30' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
           >
-            <Users size={20} className={activeTab === 'users' ? 'text-white' : 'text-slate-500 group-hover:text-white'} /> 
-            <span>Users</span>
+            <Users size={20} className={activeTab === 'users' ? 'text-white' : 'text-slate-600 group-hover:text-white'} /> 
+            <span>Entity Control</span>
           </button>
           
           <button 
             onClick={() => setActiveTab('hostels')} 
-            className={`w-full flex items-center gap-4 px-5 py-4 rounded-2xl transition-all font-bold text-sm group ${activeTab === 'hostels' ? 'bg-blue-600 text-white shadow-xl shadow-blue-500/30' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
+            className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl transition-all font-black text-sm group ${activeTab === 'hostels' ? 'bg-blue-600 text-white shadow-xl shadow-blue-500/30' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
           >
-            <Home size={20} className={activeTab === 'hostels' ? 'text-white' : 'text-slate-500 group-hover:text-white'} /> 
-            <span>Hostels</span>
+            <Home size={20} className={activeTab === 'hostels' ? 'text-white' : 'text-slate-600 group-hover:text-white'} /> 
+            <span>Asset Center</span>
           </button>
           
           <button 
             onClick={() => setActiveTab('bookings')} 
-            className={`w-full flex items-center gap-4 px-5 py-4 rounded-2xl transition-all font-bold text-sm group ${activeTab === 'bookings' ? 'bg-blue-600 text-white shadow-xl shadow-blue-500/30' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
+            className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl transition-all font-black text-sm group ${activeTab === 'bookings' ? 'bg-blue-600 text-white shadow-xl shadow-blue-500/30' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
           >
-            <CreditCard size={20} className={activeTab === 'bookings' ? 'text-white' : 'text-slate-500 group-hover:text-white'} /> 
-            <span>Bookings</span>
+            <CreditCard size={20} className={activeTab === 'bookings' ? 'text-white' : 'text-slate-600 group-hover:text-white'} /> 
+            <span>Financial Log</span>
           </button>
         </nav>
 
@@ -175,28 +175,29 @@ export default function AdminDashboard() {
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col min-w-0">
-        <header className="px-12 py-10 flex items-center justify-between glass-header">
+        <header className="px-12 py-12 flex flex-col md:flex-row items-center justify-between glass-header gap-8">
           <div>
-            <h2 className="text-3xl font-black text-slate-950 tracking-tight leading-none mb-2">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="h-1.5 w-1.5 rounded-full bg-blue-600 animate-pulse"></span>
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">System Administrator Console</p>
+            </div>
+            <h2 className="text-4xl md:text-5xl font-black text-slate-950 tracking-tighter leading-none">
               Managing <span className="text-blue-600 capitalize">{activeTab}</span>
             </h2>
-            <p className="text-sm text-slate-500 font-semibold flex items-center gap-2">
-                <LayoutDashboard size={14} /> Total Control & System Oversight
-            </p>
           </div>
           
-          <div className="flex items-center gap-6">
-            <div className="relative group">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-600 transition" size={18} />
+          <div className="flex items-center gap-6 w-full md:w-auto">
+            <div className="relative group flex-1 md:flex-initial">
+              <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-600 transition" size={20} />
               <input 
                 type="text" 
-                placeholder={`Quick search ${activeTab}...`} 
-                className="w-80 h-14 pl-12 pr-6 rounded-2xl border-none bg-slate-100 text-slate-900 placeholder:text-slate-400 focus:bg-white focus:ring-4 focus:ring-blue-600/10 transition-all outline-none font-bold"
+                placeholder={`Filter current data...`} 
+                className="w-full md:w-96 h-16 pl-14 pr-8 rounded-[1.5rem] border-none bg-slate-100 text-slate-950 placeholder:text-slate-400 focus:bg-white focus:ring-8 focus:ring-blue-600/5 transition-all outline-none font-black text-sm"
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
             
-            <div className="h-14 w-14 rounded-2xl bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-900 font-black text-xs shadow-sm">
+            <div className="h-16 w-16 rounded-[1.5rem] bg-slate-950 flex items-center justify-center text-white font-black text-sm shadow-xl shadow-slate-900/10">
                 SA
             </div>
           </div>

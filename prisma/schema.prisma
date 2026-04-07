@@ -1,38 +1,36 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
-generator client {
-  provider = "prisma-client-js"
-}
-
-
-
 model User {
-  id           Int      @id @default(autoincrement())
-  email        String   @unique
-  password     String
-  role         Role     @default(TENANT)
-  name         String?
-  uniqueNumber String?  @unique
-  schoolName   String?
-  hostelName   String?
-  roomNumber   String?
-  location     String?
-  isVerified   Boolean  @default(false)
-  phone            String?
-  businessName     String?
-  gpsAddress       String?
-  ghanaCard        String?
-  legalDocs        String?
-  verificationStatus String @default("NONE") // NONE, PENDING, VERIFIED, REJECTED
-  verificationNotes String? @db.Text
-  verification     OwnerVerification?
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-  hostels      Hostel[] 
-  bookings     Booking[]
+  id                 Int                @id @default(autoincrement())
+  email              String             @unique
+  password           String
+  role               Role               @default(TENANT)
+  name               String?
+  uniqueNumber       String?            @unique
+  schoolName         String?
+  hostelName         String?
+  roomNumber         String?
+  location           String?
+  isVerified         Boolean            @default(false)
+  phone              String?
+  businessName       String?
+  gpsAddress         String?
+  ghanaCard          String?
+  legalDocs          String?
+  verificationStatus String             @default("NONE")
+  verificationNotes  String?            @db.Text
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+  bookings           Booking[]
+  hostels            Hostel[]
+  verification       OwnerVerification?
 
   @@map("user")
 }
@@ -40,7 +38,6 @@ model User {
 model OwnerVerification {
   id              Int      @id @default(autoincrement())
   userId          Int      @unique
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   ownerPhoto      String?  @db.LongText
   idCardPhoto     String?  @db.LongText
   facilitiesPhoto String?  @db.LongText
@@ -48,6 +45,7 @@ model OwnerVerification {
   roomSize        String?  @db.LongText
   verifiedPrices  String?  @db.LongText
   updatedAt       DateTime @updatedAt
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("owner_verification")
 }
@@ -59,14 +57,16 @@ model Hostel {
   location     String
   price        Float
   images       String?     @db.LongText
-  gender       String      @default("MIXED") // MIXED, MALE, FEMALE
   createdAt    DateTime    @default(now())
-  owner        User        @relation(fields: [ownerId], references: [id])
   ownerId      Int
-  university   University? @relation(fields: [universityId], references: [id])
   universityId Int?
+  gender       String      @default("MIXED")
   bookings     Booking[]
+  owner        User        @relation(fields: [ownerId], references: [id])
+  university   University? @relation(fields: [universityId], references: [id])
 
+  @@index([ownerId], map: "hostel_ownerId_fkey")
+  @@index([universityId], map: "hostel_universityId_fkey")
   @@map("hostel")
 }
 
@@ -80,32 +80,35 @@ model University {
 }
 
 model Booking {
-  id             Int      @id @default(autoincrement())
-  student        User     @relation(fields: [studentId], references: [id])
+  id             Int       @id @default(autoincrement())
   studentId      Int
-  hostel         Hostel   @relation(fields: [hostelId], references: [id])
   hostelId       Int
   amount         Float
   paymentPhone   String?
   telecom        String?
-  verificationId String?  @unique
-  status         String   @default("APPLIED") // APPLIED, PAID, VERIFIED, CANCELLED
-  durationMonths Int?     // Number of months paid for
-  expiresAt      DateTime? // The checkout/expiry date
-  createdAt      DateTime @default(now())
+  verificationId String?   @unique
+  status         String    @default("APPLIED")
+  createdAt      DateTime  @default(now())
+  durationMonths Int?
+  expiresAt      DateTime?
+  hostel         Hostel    @relation(fields: [hostelId], references: [id])
+  student        User      @relation(fields: [studentId], references: [id])
 
+  @@index([hostelId], map: "booking_hostelId_fkey")
+  @@index([studentId], map: "booking_studentId_fkey")
   @@map("booking")
 }
 
-enum Role {
-  ADMIN
-  OWNER
-  TENANT
-}
 model Admin {
   id        Int      @id @default(autoincrement())
   username  String   @unique
   email     String   @unique
   password  String
   createdAt DateTime @default(now())
+}
+
+enum Role {
+  ADMIN
+  OWNER
+  TENANT
 }

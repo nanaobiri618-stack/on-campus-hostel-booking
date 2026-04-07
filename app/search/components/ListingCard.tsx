@@ -7,7 +7,13 @@ export function ListingCard({ hostel }: { hostel: Hostel }) {
     <article className="overflow-hidden rounded-lg border transition hover:shadow-md">
       <div className="h-40 w-full bg-gray-100 overflow-hidden">
         <img 
-          src={hostel.images?.[0] || "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=800&q=80"} 
+          src={(() => {
+            const imgs = hostel.images;
+            if (!imgs) return "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=800&q=80";
+            if (Array.isArray(imgs)) return imgs[0];
+            if (typeof imgs === 'string' && imgs.includes('|DELIM|')) return imgs.split('|DELIM|')[0];
+            return imgs;
+          })()} 
           alt={hostel.name}
           className="w-full h-full object-cover"
         />

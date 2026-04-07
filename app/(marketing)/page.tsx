@@ -170,7 +170,11 @@ function HostelCard({ hostel }: any) {
     <div className="hostel-card group bg-white rounded-3xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-2xl transition-all">
       <div className="relative h-48 bg-slate-200 overflow-hidden">
         <img 
-          src={hostel.images || "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=800&q=80"} 
+          src={(() => {
+            if (!hostel.images) return "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=800&q=80";
+            if (typeof hostel.images === 'string' && hostel.images.includes('|DELIM|')) return hostel.images.split('|DELIM|')[0];
+            return hostel.images;
+          })()} 
           alt={hostel.name}
           className="absolute inset-0 h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
         />

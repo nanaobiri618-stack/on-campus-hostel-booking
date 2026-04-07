@@ -92,30 +92,36 @@ export default function OwnerDashboard() {
   return (
     <div className="flex min-h-screen bg-slate-50">
       {/* ... sidebar unchanged ... */}
-      <aside className="bg-slate-900 text-white w-64 hidden lg:flex flex-col transition-all p-6">
-        <div className="flex items-center gap-3 mb-10 px-2">
-          <div className="h-10 w-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-900">
-            <Home size={22} className="text-white" />
+      <aside className="bg-slate-900 text-white w-64 hidden lg:flex flex-col transition-all p-8 shadow-2xl relative z-20">
+        <div className="flex items-center gap-4 mb-12 px-2 group cursor-pointer">
+          <div className="h-12 w-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/20 group-hover:rotate-6 transition-transform duration-300">
+            <Home size={24} className="text-white" />
           </div>
-          <span className="text-xl font-black tracking-tighter">HostelHub</span>
+          <div className="flex flex-col">
+            <span className="text-xl font-black tracking-tighter leading-none">HostelHub</span>
+            <span className="text-[10px] font-black text-blue-400 uppercase tracking-widest mt-1">Management</span>
+          </div>
         </div>
 
-        <nav className="flex-1 space-y-2">
+        <nav className="flex-1 space-y-3">
           <Link href="/owner/dashboard"><NavItem icon={<LayoutDashboard size={20} />} label="Console" active /></Link>
-          <Link href="/owner/students"><NavItem icon={<Users size={20} />} label="Students" /></Link>
-          <Link href="/owner/payments"><NavItem icon={<CreditCard size={20} />} label="Payments" /></Link>
-          <Link href="/owner/settings"><NavItem icon={<Settings size={20} />} label="Settings" /></Link>
+          <Link href="/owner/students"><NavItem icon={<Users size={20} />} label="Resident List" /></Link>
+          <Link href="/owner/payments"><NavItem icon={<CreditCard size={20} />} label="Revenue" /></Link>
+          <Link href="/owner/settings"><NavItem icon={<Settings size={20} />} label="Preferences" /></Link>
         </nav>
 
-        <button 
-          onClick={async () => {
-            await fetch('/api/logout', { method: 'POST' });
-            window.location.href = '/login';
-          }}
-          className="mt-auto flex items-center gap-3 px-4 py-3.5 text-slate-400 hover:text-white transition-colors font-bold"
-        >
-          <LogOut size={20} /> Logout
-        </button>
+        <div className="mt-auto pt-8 border-t border-white/5">
+          <button 
+            onClick={async () => {
+              await fetch('/api/logout', { method: 'POST' });
+              window.location.href = '/login';
+            }}
+            className="flex items-center gap-3 w-full px-4 py-4 text-slate-400 hover:text-white hover:bg-white/5 rounded-2xl transition-all font-bold text-sm"
+          >
+            <LogOut size={20} className="text-red-400/60" /> 
+            <span>Secure Logout</span>
+          </button>
+        </div>
       </aside>
 
       {/* --- MAIN CONTENT --- */}
@@ -211,51 +217,61 @@ export default function OwnerDashboard() {
 
           <div className="space-y-4">
             {loading ? (
-              <p className="text-center py-10 text-slate-400 font-medium">Loading applications...</p>
+              <div className="flex flex-col items-center justify-center py-24 space-y-4">
+                <div className="h-12 w-12 border-4 border-blue-600/20 border-t-blue-600 rounded-full animate-spin"></div>
+                <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">Synchronizing database...</p>
+              </div>
             ) : filteredStudents.length === 0 ? (
-              <div className="bg-white p-10 rounded-2xl border border-dashed border-slate-200 text-center">
-                <p className="text-slate-500 font-medium">No {filter.toLowerCase()} applications found.</p>
+              <div className="bg-white p-20 rounded-[2.5rem] border border-dashed border-slate-200 text-center shadow-sm">
+                <div className="h-20 w-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6 text-slate-300">
+                  <Search size={40} />
+                </div>
+                <p className="text-slate-500 font-bold uppercase tracking-widest text-xs">No entries matching filter</p>
+                <button onClick={() => setFilter('ALL')} className="mt-4 text-blue-600 font-black text-sm uppercase hover:underline">Reset Filters</button>
               </div>
             ) : filteredStudents.map((item) => (
-              <div key={item.id} className="auth-card !max-w-none p-6 flex flex-col lg:flex-row items-center justify-between gap-6 hover:border-blue-200 transition-all animate-slide-up group bg-white border rounded-2xl shadow-sm">
-                <div className="flex items-center gap-5 w-full lg:w-auto">
-                  <div className="h-16 w-16 rounded-2xl bg-slate-900 flex items-center justify-center text-white font-bold text-2xl shadow-xl shadow-slate-200 group-hover:bg-blue-600 transition-colors">
+              <div key={item.id} className="bg-white rounded-[2rem] border border-slate-100 p-6 flex flex-col md:flex-row items-center justify-between gap-6 hover:shadow-2xl hover:shadow-slate-200/50 transition-all duration-500 group relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-1 h-full bg-blue-600 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                
+                <div className="flex items-center gap-6 w-full md:w-auto">
+                  <div className="h-20 w-20 rounded-3xl bg-slate-900 flex items-center justify-center text-white font-black text-3xl shadow-xl shadow-slate-200 group-hover:bg-blue-600 group-hover:-rotate-3 transition-all duration-500">
                     {item.name?.[0]}
                   </div>
                   <div>
-                    <h3 className="font-black text-slate-900 text-lg leading-tight">{item.name}</h3>
-                    <div className="mt-1 space-y-0.5">
-                      <p className="text-xs font-bold text-slate-600 uppercase">{item.schoolName || 'University Not Specified'}</p>
-                      <p className="text-xs text-slate-400 font-medium">Room: <span className="text-blue-600 font-bold">{item.roomNumber || 'Not Allocated'}</span> • {item.hostelName}</p>
-                    </div>
-                    <div className="flex items-center gap-2 mt-2">
-                      <span className={`text-[10px] font-black px-2.5 py-1 rounded-md uppercase tracking-tight ${item.status === 'VERIFIED' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
-                        {item.status}
-                      </span>
-                      <span className="text-xs text-slate-400 font-medium">• Joined {new Date(item.createdAt).toLocaleDateString()}</span>
+                    <h3 className="font-black text-slate-900 text-xl leading-tight tracking-tight uppercase">{item.name}</h3>
+                    <div className="mt-2 space-y-1">
+                      <div className="flex items-center gap-1.5 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                        <Home size={12} className="text-blue-500" /> {item.hostelName || 'General Listing'}
+                      </div>
+                      <div className="flex items-center gap-1.5 text-xs text-slate-500 font-medium">
+                        <Smartphone size={12} className="text-slate-400" /> {item.phone || 'No Contact'}
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="flex flex-col md:flex-row items-center gap-6 w-full lg:w-auto">
-                  <div className="bg-slate-50 px-8 py-3 rounded-2xl border border-slate-100 text-center w-full md:w-auto">
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Unique ID</p>
-                    <p className="text-2xl font-mono font-black text-blue-700 tracking-[0.2em]">{item.uniqueNumber}</p>
+                <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
+                  <div className="bg-slate-50 px-6 py-4 rounded-2xl border border-slate-100 text-center w-full sm:w-auto">
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Room Allocation</p>
+                    <p className="text-sm font-black text-slate-900 uppercase">{item.roomNumber || 'PENDING'}</p>
                   </div>
-                  {item.status !== 'VERIFIED' && (
-                    <button 
-                      disabled={verifying === item.id}
-                      onClick={() => handleVerify(item.id)}
-                      className="btn-primary w-full md:w-auto px-10 py-4 flex gap-2 shadow-blue-300 disabled:opacity-50"
-                    >
-                      <ShieldCheck size={20} /> {verifying === item.id ? "Verifying..." : "Verify Student"}
-                    </button>
-                  )}
-                  {item.status === 'VERIFIED' && (
-                    <div className="flex items-center gap-2 text-green-600 font-bold bg-green-50 px-6 py-4 rounded-2xl border border-green-100">
-                      <CheckCircle size={20} /> Verified
-                    </div>
-                  )}
+                  
+                  <div className="flex flex-col items-end gap-2 w-full sm:w-auto min-w-[140px]">
+                    {item.status !== 'VERIFIED' ? (
+                      <button 
+                        disabled={verifying === item.id}
+                        onClick={() => handleVerify(item.id)}
+                        className="w-full bg-slate-900 text-white px-8 py-4 rounded-2xl font-black text-xs uppercase shadow-xl shadow-slate-900/20 hover:bg-blue-600 transition-all active:scale-95 flex items-center justify-center gap-2"
+                      >
+                        {verifying === item.id ? <div className="h-4 w-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div> : <ShieldCheck size={16} />}
+                        {verifying === item.id ? "Processing..." : "Authorize Room"}
+                      </button>
+                    ) : (
+                      <div className="w-full flex items-center justify-center gap-2 text-emerald-600 font-black text-[10px] uppercase bg-emerald-50 px-6 py-4 rounded-2xl border border-emerald-100">
+                        <CheckCircle size={16} /> Access Granted
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}
