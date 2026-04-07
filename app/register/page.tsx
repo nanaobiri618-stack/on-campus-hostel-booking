@@ -13,9 +13,7 @@ export default function RegisterPage() {
     role: "TENANT",
     uniqueNumber: "",
     schoolName: "",
-    hostelName: "",
     location: "",
-    roomNumber: "",
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -33,10 +31,8 @@ export default function RegisterPage() {
 
   const filteredHostels = allHostels.filter(h => {
     const schoolName = formData.schoolName || "";
-    const loc = formData.location || "";
     const schoolMatch = schoolName && h.university?.name.toLowerCase().includes(schoolName.toLowerCase());
-    const locationMatch = loc && h.location.toLowerCase().includes(loc.toLowerCase());
-    return schoolMatch || locationMatch;
+    return schoolMatch;
   }).slice(0, 3);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -139,47 +135,30 @@ export default function RegisterPage() {
             </div>
 
             {formData.role === 'TENANT' && (
-              <>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">University / School Name</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="KNUST"
-                    className="w-full px-3 py-2 border rounded-md outline-none focus:ring-2 focus:ring-blue-500"
-                    onChange={(e) => setFormData({ ...formData, schoolName: e.target.value })}
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Hostel Name</label>
-                    <input
-                      type="text"
-                      className="w-full px-3 py-2 border rounded-md outline-none focus:ring-2 focus:ring-blue-500"
-                      onChange={(e) => setFormData({ ...formData, hostelName: e.target.value })}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Room No.</label>
-                    <input
-                      type="text"
-                      className="w-full px-3 py-2 border rounded-md outline-none focus:ring-2 focus:ring-blue-500"
-                      onChange={(e) => setFormData({ ...formData, roomNumber: e.target.value })}
-                    />
-                  </div>
-                </div>
-              </>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">University / School Name</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="KNUST"
+                  className="w-full px-3 py-2 border rounded-md outline-none focus:ring-2 focus:ring-blue-500"
+                  onChange={(e) => setFormData({ ...formData, schoolName: e.target.value })}
+                />
+              </div>
             )}
 
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Location</label>
-              <input
-                type="text"
-                placeholder="City / Area"
-                className="w-full px-3 py-2 border rounded-md outline-none focus:ring-2 focus:ring-blue-500"
-                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-              />
-            </div>
+            {formData.role === 'OWNER' && (
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Hostel/Business Location</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="City / Area"
+                  className="w-full px-3 py-2 border rounded-md outline-none focus:ring-2 focus:ring-blue-500"
+                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                />
+              </div>
+            )}
           </div>
 
           <button
