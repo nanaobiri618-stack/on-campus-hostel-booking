@@ -41,7 +41,8 @@ export default function AddHostelPage() {
     universityId: "",
     location: "",
     price: "",
-    rooms: "",
+    totalRooms: "",
+    capacityPerRoom: "",
     description: "",
     gender: "MIXED",
     images: [] as string[]
@@ -207,9 +208,14 @@ export default function AddHostelPage() {
                 onChange={(e) => setFormData({...formData, price: e.target.value})} />
             </div>
             <div>
-              <label className="text-xs font-bold uppercase text-slate-400 ml-2">Rooms Available</label>
-              <input type="number" placeholder="12" required 
-                onChange={(e) => setFormData({...formData, rooms: e.target.value})} />
+              <label className="text-xs font-bold uppercase text-slate-400 ml-2">Total Rooms</label>
+              <input type="number" placeholder="10" required 
+                onChange={(e) => setFormData({...formData, totalRooms: e.target.value})} />
+            </div>
+            <div>
+              <label className="text-xs font-bold uppercase text-slate-400 ml-2">Students per Room (N in 1)</label>
+              <input type="number" placeholder="4" required 
+                onChange={(e) => setFormData({...formData, capacityPerRoom: e.target.value})} />
             </div>
           </div>
 

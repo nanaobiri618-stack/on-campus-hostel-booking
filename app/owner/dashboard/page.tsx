@@ -51,9 +51,6 @@ export default function OwnerDashboard() {
   }, []);
 
   const handleVerify = async (id: number) => {
-    const roomNumber = window.prompt("Enter Room Number to assign to this student (e.g., Room 204):");
-    if (roomNumber === null) return;
-
     const durationMonths = window.prompt("Enter Duration of Stay in Months (e.g., 12):", "12");
     if (durationMonths === null) return;
 
@@ -64,7 +61,6 @@ export default function OwnerDashboard() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           id, 
-          roomNumber,
           durationMonths: parseInt(durationMonths) || 12
         }),
       });

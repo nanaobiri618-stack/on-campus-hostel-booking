@@ -45,6 +45,34 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'No pending booking found for this student' }, { status: 404 });
     }
 
+    // --- AUTOMATED ROOM ALLOCATION LOGIC ---
+    const hostel = firstBooking.hostel;
+    const totalRooms = hostel.totalRooms || 10;
+    const capacity = hostel.capacityPerRoom || 4;
+    let assignedRoom = "";
+
+    // Find the first available room
+    for (let i = 1; i <= totalRooms; i++) {
+      const roomName = `Room ${i}`;
+      const occupantCount = await prisma.user.count({
+        where: {
+          hostelName: hostel.name,
+          roomNumber: roomName,
+          isVerified: true
+        }
+      });
+
+      if (occupantCount < capacity) {
+        assignedRoom = roomName;
+        break;
+      }
+    }
+
+    if (!assignedRoom) {
+      return NextResponse.json({ error: 'Hostel is completely full! All rooms are at maximum capacity.' }, { status: 400 });
+    }
+    // ---------------------------------------
+
     await (prisma as any).booking.updateMany({
       where: {
         studentId: id,
@@ -63,8 +91,8 @@ export async function POST(request: Request) {
       where: { id },
       data: { 
         isVerified: true,
-        roomNumber: roomNumber || undefined,
-        hostelName: firstBooking.hostel.name
+        roomNumber: assignedRoom,
+        hostelName: hostel.name
       }
     });
 

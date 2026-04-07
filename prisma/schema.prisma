@@ -60,8 +60,10 @@ model Hostel {
   createdAt    DateTime    @default(now())
   ownerId      Int
   universityId Int?
-  gender       String      @default("MIXED")
-  bookings     Booking[]
+  gender           String      @default("MIXED")
+  totalRooms       Int         @default(10)
+  capacityPerRoom  Int         @default(4)
+  bookings         Booking[]
   owner        User        @relation(fields: [ownerId], references: [id])
   university   University? @relation(fields: [universityId], references: [id])
 

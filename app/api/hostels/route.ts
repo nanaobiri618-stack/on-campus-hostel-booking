@@ -11,6 +11,7 @@ export async function GET() {
     const hostelsRaw = await prisma.$queryRawUnsafe<any[]>(`
       SELECT 
         h.id, h.name, h.description, h.location, h.price, h.images, h.createdAt,
+        h.totalRooms, h.capacityPerRoom,
         u.id as uni_id, u.name as uni_name, u.location as uni_location,
         o.id as owner_id, o.name as owner_name, o.businessName as owner_businessName, o.phone as owner_phone
       FROM hostel h
@@ -28,6 +29,8 @@ export async function GET() {
       price: h.price,
       images: h.images,
       createdAt: h.createdAt,
+      totalRooms: h.totalRooms,
+      capacityPerRoom: h.capacityPerRoom,
       university: h.uni_id ? {
         id: h.uni_id,
         name: h.uni_name,
@@ -85,12 +88,14 @@ export async function POST(request: Request) {
     const newHostel = await (prisma.hostel as any).create({
       data: {
         name: body.name,
-        description: body.description || `Rooms: ${body.rooms || 'N/A'}. Location: ${body.location}`, 
+        description: body.description, 
         location: body.location,
         price: parseFloat(body.price),
         ownerId: payload.userId, 
         universityId: universityId,
         gender: body.gender || "MIXED",
+        totalRooms: parseInt(body.totalRooms) || 10,
+        capacityPerRoom: parseInt(body.capacityPerRoom) || 4,
         images: Array.isArray(body.images) 
           ? body.images.filter((url: string) => url.trim() !== "").join('|DELIM|') 
           : body.images,
